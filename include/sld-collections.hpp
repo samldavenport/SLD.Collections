@@ -1,6 +1,7 @@
 #ifndef SLD_COLLECTIONS_HPP
 #define SLD_COLLECTIONS_HPP
 
+#include <Windows.h>
 #include <cstdint>
 #include <assert.h>
 
@@ -38,22 +39,22 @@ namespace sld {
     typedef intptr_t addr;
 
     // collections
-    class collection_manager;
-    class buffer;
-    class array;
-    class array_list;
-    class stack;
-    class stack_list;
-    class queue;
-    class queue_list;
-    class heap;
-    class set;
-    class hash_map;
-    class sparse_array;
-    class single_linked_list;
-    class single_linked_node;
-    class double_linked_list;
-    class double_linked_node;
+    struct collection_manager;
+    struct buffer;
+    struct array;
+    struct array_list;
+    struct stack;
+    struct stack_list;
+    struct queue;
+    struct queue_list;
+    struct heap;
+    struct set;
+    struct hash_map;
+    struct sparse_array;
+    struct single_linked_list;
+    struct single_linked_node;
+    struct double_linked_list;
+    struct double_linked_node;
 
     //-------------------------------------------------------------------
     // COLLECTION MANAGER
@@ -107,28 +108,18 @@ namespace sld {
     // BUFFER
     //-------------------------------------------------------------------
 
-    class buffer {
-    
-    private:
-
-        byte* _data;
-        u32   _size;
-        u32   _length;
-    
-    public:
-
-        buffer (const u32 size);
-        buffer (const u32 size, byte* memory);
-
-        void clear   (void);
-        u32  append  (const buffer* src);
-        u32  append  (const byte*   src_data, const u32 src_length);
-        u32  copy_to (const buffer* dst) const;
-        u32  copy_to (const byte*   dst_data, const u32 dst_size) const;
-
-        byte&       operator[] (u32 index);
-        const byte& operator[] (u32 index) const;
-    };
+    bool  buffer_validate     (const buffer* b);
+    void  buffer_assert_valid (const buffer* b);
+    u32   buffer_size         (const buffer* b);
+    u32   buffer_length       (const buffer* b);
+    byte* buffer_data         (const buffer* b, const u32 index);
+    u32   buffer_copy_to      (const buffer* b, const buffer* dst);
+    u32   buffer_append_to    (const buffer* b, const buffer* src);
+    u32   buffer_copy_to      (const buffer* b, const byte* dst_mem, const u32 dst_size);
+    u32   buffer_append_to    (const buffer* b, const byte* src_mem, const u32 src_length);
+    void  buffer_clear        (buffer* b);
+    u32   buffer_append_from  (buffer* b, const buffer* src);
+    u32   buffer_append_from  (buffer* b, const byte* src_mem, const u32 src_length);
 
     //-------------------------------------------------------------------
     // ARRAY
@@ -197,50 +188,45 @@ namespace sld {
         const byte& operator[] (u32 index) const;
     };
 
-
-
-
     //-------------------------------------------------------------------
     // STACK
     //-------------------------------------------------------------------
 
-    class stack {
-    
-    private:
-        byte* _data;
-        u32   _size;
-        u32   _stride;
-        u32   _ptr;
-    
-    public:
-
-        stack (const u32 size, const u32 stride);
-        stack (const u32 size, const u32 stride, byte* mem);
-
-        buffer*     to_buffer  (void)            const;
-        u32         size_total (void)            const;
-        u32         size_used  (void)            const;
-        u32         size_free  (void)            const;
-        const byte* peek       (const u32 count) const;
-        const byte& peek       (const u32 count) const;
-
-        void    reset       (void);
-        u32     push        (const u32 size, const byte* data);
-        byte*   pull        (const u32 size);
-    };
+    stack*      stack_create           (const u32 size);
+    void        stack_destroy          (stack* s);
+    u32         stack_memory_size      (const u32 size);
+    stack*      stack_init_from_memory (void* memory, const u32 size);
+    bool        stack_validate         (const stack* s);
+    void        stack_assert_valid     (const stack* s);
+    u32         stack_ptr              (const stack* s);
+    buffer*     stack_to_buffer        (const stack* s);
+    u32         stack_size_total       (const stack* s);
+    u32         stack_size_used        (const stack* s);
+    u32         stack_size_free        (const stack* s);
+    const byte* stack_peek             (const stack* s, const u32 size);
+    void        stack_reset            (stack* s);
+    byte*       stack_push             (stack* s, const u32 size);
+    byte*       stack_pull             (stack* s, const u32 size);
 
     //-------------------------------------------------------------------
     // STACK LIST
     //-------------------------------------------------------------------
 
-    template<typename t>
-    class stack_list {
-    
-    private:
-        t*  _elements;
-        u32 _capacity;
-        u32 _ptr;
-    };
+    template<typename t> stack_list<t>* stack_list_create           (const u32 size);
+    template<typename t> void           stack_list_destroy          (stack_list<t>* sl);
+    template<typename t> u32            stack_list_memory_size      (const u32 size);
+    template<typename t> stack_list<t>* stack_list_init_from_memory (void* memory, const u32 size);
+    template<typename t> bool           stack_list_validate         (const stack_list<t>* sl);
+    template<typename t> void           stack_list_assert_valid     (const stack_list<t>* sl);
+    template<typename t> u32            stack_list_head             (const stack_list<t>* sl);
+    template<typename t> buffer*        stack_list_to_buffer        (const stack_list<t>* sl);
+    template<typename t> u32            stack_list_size_total       (const stack_list<t>* sl);
+    template<typename t> u32            stack_list_size_used        (const stack_list<t>* sl);
+    template<typename t> u32            stack_list_size_free        (const stack_list<t>* sl);
+    template<typename t> const byte*    stack_list_peek             (const stack_list<t>* sl, const u32 size);
+    template<typename t> void           stack_list_reset            (stack_list<t>* sl);
+    template<typename t> byte*          stack_list_push             (stack_list<t>* sl, const u32 size);
+    template<typename t> byte*          stack_list_pull             (stack_list<t>* sl, const u32 size);
 
 
     //-------------------------------------------------------------------
@@ -306,6 +292,14 @@ namespace sld {
         t*  dequeue (const u32 count = 0);
         t&  dequeue (const u32 count);
     };
+
+    constexpr inline u64  size_kilobytes   (const u64 n_kilobytes)               { return (n_kilobytes * 1024);                               }
+    constexpr inline u64  size_megabytes   (const u64 n_megabytes)               { return (n_megabytes * 1024 * 1024);                        }
+    constexpr inline u64  size_gigabytes   (const u64 n_gigabytes)               { return (n_gigabytes * 1024 * 1024 * 1024);                 }
+    constexpr inline u64  size_align       (const u64 size, const u64 alignment) { return ((size + alignment - 1) / (alignment * alignment)); }
+    constexpr inline u64  size_align_pow_2 (const u64 size, const u64 alignment) { return ((size + alignment - 1) & ~(alignment - 1));        }
+    constexpr inline bool size_is_pow_2    (const u64 size)                      { return (((size > 0) && ((size & (size - 1)) == 0)));       }               
+
 };
 
 #endif //SLD_COLLECTIONS_HPP
