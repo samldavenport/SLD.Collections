@@ -122,40 +122,6 @@ namespace sld {
     u32   buffer_append_from  (buffer* b, const byte* src_mem, const u32 src_length);
 
     //-------------------------------------------------------------------
-    // ARRAY
-    //-------------------------------------------------------------------
-
-    class array {
-    
-    private:
-        byte* _data;
-        u32   _size;
-        u32   _length;
-        u32   _stride;
-
-    public:
-
-        const buffer* to_buffer  (void) const;
-        u32           size_total (void) const;
-        u32           size_free  (void) const;
-        u32           size_used  (void) const;
-        u32           length     (void) const;
-        u32           stride     (void) const;
-        u32           capacity   (void) const;
-        u32           count      (void) const;
-
-        vptr  get      (const u32 index);
-        u32   index_of (const vptr p);
-
-        void  clear    (void);
-        u32   add      (const vptr p);
-        u32   add      (const vptr p, const u32 count);
-
-        byte*       operator[] (u32 index);
-        const byte* operator[] (u32 index) const;
-    };
-
-    //-------------------------------------------------------------------
     // ARRAY LIST
     //-------------------------------------------------------------------
 
