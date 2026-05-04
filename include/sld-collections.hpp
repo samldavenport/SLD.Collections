@@ -365,6 +365,7 @@ namespace sld {
     template<typename type>
     struct single_linked_list {
         single_linked_node<type>* first;        
+        single_linked_node<type>* last;        
     };
 
     //-------------------------------------------------------------------
@@ -374,6 +375,7 @@ namespace sld {
     template<typename type>
     struct double_linked_list {
         single_linked_node<type>* first;        
+        single_linked_node<type>* last;        
     };
 
     //-------------------------------------------------------------------
