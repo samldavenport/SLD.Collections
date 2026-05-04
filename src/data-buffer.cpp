@@ -5,132 +5,153 @@
 namespace sld {
 
     //-------------------------------------------------------------------
-    // BUFFER
+    // CONSTANTS
     //-------------------------------------------------------------------
 
-    struct buffer {
-        byte* data;
-        u32   size;
-        u32   length;
-    };
+    static constexpr u32 BUFFER_STRUCT_SIZE = sizeof(data_buffer);
 
     //-------------------------------------------------------------------
-    // METHODS
+    // STATIC METHODS
     //-------------------------------------------------------------------
 
-    bool
-    buffer_validate(
-        const buffer* b) {
+    static data_buffer*
+    data_buffer::create(
+        const u32 buffer_size) {
 
-        bool is_valid = (b != NULL);
-        if (is_valid) {
-            b &= (
-                (b->data   != NULL) ||
-                (b->size   != 0)    ||
-                (b->length <= b->size)
-            );
-        }
-        return(is_valid);
-    }
+        // allocate memory
+        const u32 mem_size = data_buffer::memory_size(buffer_size); 
+        vptr      mem_ptr  = malloc(mem_size); 
+        assert(mem_ptr);
 
-    void
-    buffer_assert_valid(
-        const buffer* b) {
+        // initialize memory
+        data_buffer* db = data_buffer::init(mem_ptr, mem_size);
 
-        const bool is_valid = buffer_validate(b);
-        assert(is_valid);
-    }
-
-    u32
-    buffer_size(
-        const buffer* b) {
-
-        buffer_validate(b);
-        return(b->size);
-    }
-
-    u32
-    buffer_length(
-        const buffer* b) {
-
-        buffer_validate(b);
-        return(b->length);
-    }
-
-    byte*
-    buffer_data(
-        const buffer* b,
-        const u32     index) {
-
-        buffer_assert_valid(b);
-
-        byte* data = (index < b->length)
-            ? &b->data[index]
-            : NULL;
-
-        return(data);
-    }
-
-    void
-    buffer_clear(
-        buffer* b) {
-
-        buffer_assert_valid(b);
-
-        memset(b->data, 0, b->size);
-    }
-
-    u32
-    buffer_append(
-        buffer*       b,
-        const buffer* src) {
-
+        // assert valid
         assert(
-            buffer_validate(b) &&
-            buffer_validate(src)
+            db != NULL                &&
+            db->is_valid()            &&
+            db->size   == buffer_size &&
+            db->length == 0
         );
+        return(db);
+    }
 
-        const u32 size_free    = (b->size - b->length);
-        const u32 size_to_copy = (src->length <= size_free)
-            ? size_free
-            : (src->length - size_free);
+    static u32
+    data_buffer::memory_size(
+        const u32 buffer_size) {
+        
+        const u32 mem_size = (BUFFER_STRUCT_SIZE + buffer_size);
+        return(mem_size);
+    }
 
-        (void)memccpy(
-            b->data,
-            src->data,
-            size_to_copy
-        );
+    static data_buffer* 
+    data_buffer::init(
+        const u32 memory_size,
+        vptr      memory_ptr) {
 
-        return(size_to_copy);
+        zero_memory(memory_ptr, memory_size);
+
+        data_buffer* db = (data_buffer*)memory_ptr;
+        db->data   = (memory_ptr  + BUFFER_STRUCT_SIZE);
+        db->size   = (memory_size - BUFFER_STRUCT_SIZE);
+        db->length = 0;
+
+        return(db);
+    }
+
+    static void
+    data_buffer::destroy(
+        data_buffer* db) {
+
+        assert(db != NULL && db->is_valid());
+
+        const u32 memory_size = data_buffer::memory_size(db->size);
+
+        zero_memory(memory_size, (vptr)db);
+
+        free(db);
+    }
+
+    //-------------------------------------------------------------------
+    // CONSTANT METHODS
+    //-------------------------------------------------------------------
+
+    u32
+    data_buffer::size_free(
+        void) const {
+
+        this->assert_valid();
+        return(this->size - this->length);
+    }
+
+    u32 data_buffer::copy_to       (const data_buffer*  to, const u32   offset = 0)                    const;
+    u32 data_buffer::copy_to       (const data_buffer&  to, const u32   offset = 0)                    const;
+    u32 data_buffer::append_to     (const data_buffer*  to, const u32   offset = 0)                    const;
+    u32 data_buffer::append_to     (const data_buffer&  to, const u32   offset = 0)                    const;
+    u32 data_buffer::copy_to       (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
+    u32 data_buffer::append_to     (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
+    u32 data_buffer::to_sub_buffer (data_buffer*        to, const u32   start,   const u32 length)     const;        
+    u32 data_buffer::to_sub_buffer (data_buffer&        to, const u32   start,   const u32 length)     const;        
+
+    //-------------------------------------------------------------------
+    // MUTABLE METHODS
+    //-------------------------------------------------------------------
+
+    u32
+    data_buffer::copy_from(
+        const data_buffer* from,
+        const u32          offset) {
+
     }
     
     u32
-    buffer_append(
-        buffer*     b,
-        const byte* src_mem,
-        const u32   src_length) {
+    data_buffer::append_from(
+        const data_buffer* from,
+        const u32          offset) {
 
     }
     
     u32
-    buffer_copy_to(
-        buffer*       b,
-        const buffer* dst) {
+    data_buffer::copy_from(
+        const data_buffer& from,
+        const u32          offset) {
 
     }
     
     u32
-    buffer_copy_to(
-        buffer*     b,
-        const byte* dst_data,
-        const u32   dst_size) {
+    data_buffer::append_from(
+        const data_buffer& from,
+        const u32          offset) {
 
     }
     
-    byte*
-    buffer_get(
-        buffer*   b,
+    
+    u32 data_buffer::copy_from   (const u32     from_size, const byte* from_data, const u32 offset);
+    u32 data_buffer::append_from (const u32     from_size, const byte* from_data, const u32 offset);
+
+    //-------------------------------------------------------------------
+    // OPERATORS
+    //-------------------------------------------------------------------
+
+    byte&
+    data_buffer::operator[] (
         const u32 index) {
 
+        assert(
+            this->is_valid() &&
+            index < this->length 
+        );
+        return(this->data[index]);
+    }
+
+    const byte&
+    data_buffer::operator[] (
+        const u32 index) const {
+
+        assert(
+            this->is_valid() &&
+            index < this->length 
+        );
+        return(this->data[index]);
     }
 };

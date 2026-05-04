@@ -15,9 +15,9 @@ namespace sld {
     // CONSTANTS
     //-------------------------------------------------------------------
 
-    static const u32 INVALID_INDEX = 0xFFFFFFFF;
-    static const u32 MAX_CAPACITY  = 0xFFFFFFFE;
-    static const u32 STRIDE_NONE   = 0;
+    static constexpr u32 INVALID_INDEX = 0xFFFFFFFF;
+    static constexpr u32 MAX_CAPACITY  = 0xFFFFFFFE;
+    static constexpr u32 STRIDE_NONE   = 0;
 
     //-------------------------------------------------------------------
     // TYPES
@@ -90,22 +90,6 @@ namespace sld {
     template<typename type> struct single_linked_node;
     template<typename type> struct double_linked_list;
     template<typename type> struct double_linked_node;
-    // nodes
-    template<typename type>
-    struct single_linked_node {
-        single_linked_node<type>* next;
-        type                      element;        
-    };
-
-    template<typename type>
-    struct double_linked_node {
-        single_linked_node<type>* next;
-        single_linked_node<type>* prev;
-        type                      element;        
-    };
-
-
-
 
     // hash collections
     template<typename value>               struct set_32;
@@ -144,22 +128,23 @@ namespace sld {
         u32   length;
 
         // static methods
-        static buffer* create      (const u32 size);
-        static u32     memory_size (const u32 size);
-        static void    init        (const u32 size, byte* data);
-        static void    destroy     (data_buffer* db);
+        static data_buffer* create      (const u32 buffer_size);
+        static u32          memory_size (const u32 buffer_size);
+        static data_buffer* init        (const u32 memory_size, vptr memory_ptr);
+        static void         destroy     (data_buffer* db);
 
         // constant methods
-        u32 size_free     (void)                                                              const;
-        u32 size_used     (void)                                                              const;
-        u32 copy_to       (const data_buffer*  to, const u32   offset = 0)                    const;
-        u32 copy_to       (const data_buffer&  to, const u32   offset = 0)                    const;
-        u32 append_to     (const data_buffer*  to, const u32   offset = 0)                    const;
-        u32 append_to     (const data_buffer&  to, const u32   offset = 0)                    const;
-        u32 copy_to       (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
-        u32 append_to     (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
-        u32 to_sub_buffer (data_buffer*        to, const u32   start,   const u32 length)     const;        
-        u32 to_sub_buffer (data_buffer&        to, const u32   start,   const u32 length)     const;        
+        bool is_valid      (void);
+        void assert_valid  (void);
+        u32  size_free     (void);                                                              const;
+        u32  copy_to       (const data_buffer*  to, const u32   offset = 0)                    const;
+        u32  copy_to       (const data_buffer&  to, const u32   offset = 0)                    const;
+        u32  append_to     (const data_buffer*  to, const u32   offset = 0)                    const;
+        u32  append_to     (const data_buffer&  to, const u32   offset = 0)                    const;
+        u32  copy_to       (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
+        u32  append_to     (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
+        u32  to_sub_buffer (data_buffer*        to, const u32   start,   const u32 length)     const;        
+        u32  to_sub_buffer (data_buffer&        to, const u32   start,   const u32 length)     const;        
     
         // mutable methods    
         u32 copy_from   (const data_buffer* from, const u32   offset = 0);
@@ -171,8 +156,6 @@ namespace sld {
 
         // operators
         byte&       operator[] (const u32 index);
-        byte&       operator[] (const u32 index);
-        const byte& operator[] (const u32 index) const;
         const byte& operator[] (const u32 index) const;
     };
 
@@ -372,7 +355,7 @@ namespace sld {
     template<typename type>
     struct single_linked_list {
 
-        using node = single_linked_node<type>; 
+        using node = single_linked_node<type>;
 
         node* first;        
         node* last;
@@ -848,6 +831,12 @@ namespace sld {
     constexpr inline u64  size_align       (const u64 size, const u64 alignment) { return ((size + alignment - 1) / (alignment * alignment)); }
     constexpr inline u64  size_align_pow_2 (const u64 size, const u64 alignment) { return ((size + alignment - 1) & ~(alignment - 1));        }
     constexpr inline bool size_is_pow_2    (const u64 size)                      { return (((size > 0) && ((size & (size - 1)) == 0)));       }               
+
+    //-------------------------------------------------------------------
+    // MEMORY UTILITIES
+    //-------------------------------------------------------------------
+
+    inline void zero_memory(const u32 size, vptr memory) { memset(vptr, 0, size); }
 
     //-------------------------------------------------------------------
     // DATA HASHING
