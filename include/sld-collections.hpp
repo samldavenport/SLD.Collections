@@ -9,6 +9,9 @@
 #   define SLD_COLLECTIONS_DEFAULT_HASH 32
 #endif
 
+#define SLD_TEMPLATE_TYPE      template<typename type>
+#define SLD_TEMPLATE_KEY_VALUE template<typename key, typename value>
+
 namespace sld {
 
     //-------------------------------------------------------------------
@@ -81,26 +84,26 @@ namespace sld {
     struct queue_buffer;
     
     // list collections
-    template<typename t> struct array_list;
-    template<typename t> struct stack_list;
-    template<typename t> struct queue_list;
+    SLD_TEMPLATE_TYPE struct array_list;
+    SLD_TEMPLATE_TYPE struct stack_list;
+    SLD_TEMPLATE_TYPE struct queue_list;
 
     // linked collections
-    template<typename type> struct single_linked_list;
-    template<typename type> struct single_linked_node;
-    template<typename type> struct double_linked_list;
-    template<typename type> struct double_linked_node;
+    SLD_TEMPLATE_TYPE struct single_linked_list;
+    SLD_TEMPLATE_TYPE struct single_linked_node;
+    SLD_TEMPLATE_TYPE struct double_linked_list;
+    SLD_TEMPLATE_TYPE struct double_linked_node;
 
     // hash collections
-    template<typename value>               struct set_32;
-    template<typename value>               struct set_64;
-    template<typename value>               struct set_128;
-    template<typename key, typename value> struct map_32;
-    template<typename key, typename value> struct map_64; 
-    template<typename key, typename value> struct map_128;
-    template<typename key, typename value> struct sparse_array_32;
-    template<typename key, typename value> struct sparse_array_64;
-    template<typename key, typename value> struct sparse_array_128;
+    SLD_TEMPLATE_TYPE      struct set_32;
+    SLD_TEMPLATE_TYPE      struct set_64;
+    SLD_TEMPLATE_TYPE      struct set_128;
+    SLD_TEMPLATE_KEY_VALUE struct map_32;
+    SLD_TEMPLATE_KEY_VALUE struct map_64; 
+    SLD_TEMPLATE_KEY_VALUE struct map_128;
+    SLD_TEMPLATE_KEY_VALUE struct sparse_array_32;
+    SLD_TEMPLATE_KEY_VALUE struct sparse_array_64;
+    SLD_TEMPLATE_KEY_VALUE struct sparse_array_128;
 
 #if SLD_COLLECTIONS_DEFAULT_HASH == 64
     using set          = set_64;
@@ -177,7 +180,7 @@ namespace sld {
         static void   destroy      (stack_buffer* stack);
 
         // constant methods        
-        bool          validate       (void)            const;
+        bool          is_valid       (void)            const;
         void          assert_valid   (void)            const;
         u32           size_used      (void)            const;
         u32           size_free      (void)            const;
@@ -190,6 +193,8 @@ namespace sld {
         const byte*   peek         (const u32 size);
         byte*         pull         (const u32 size);
         u32           push         (const u32 size, const byte* data);
+        template<typename type> u32 pull_struct (const u32 count = 1);
+        template<typename type> u32 push_struct (const u32 count = 1);
     };
 
     //-------------------------------------------------------------------
