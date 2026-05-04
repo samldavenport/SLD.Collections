@@ -71,21 +71,6 @@ namespace sld {
     typedef void*    vptr;
     typedef intptr_t addr;
 
-    // nodes
-    template<typename type>
-    struct single_linked_node {
-        single_linked_node<type>* next;
-        type                      element;        
-    };
-
-    template<typename type>
-    struct double_linked_node {
-        single_linked_node<type>* next;
-        single_linked_node<type>* prev;
-        type                      element;        
-    };
-
-
     //-------------------------------------------------------------------
     // COLLECTIONS
     //-------------------------------------------------------------------
@@ -105,6 +90,22 @@ namespace sld {
     template<typename type> struct single_linked_node;
     template<typename type> struct double_linked_list;
     template<typename type> struct double_linked_node;
+    // nodes
+    template<typename type>
+    struct single_linked_node {
+        single_linked_node<type>* next;
+        type                      element;        
+    };
+
+    template<typename type>
+    struct double_linked_node {
+        single_linked_node<type>* next;
+        single_linked_node<type>* prev;
+        type                      element;        
+    };
+
+
+
 
     // hash collections
     template<typename value>               struct set_32;
@@ -363,9 +364,18 @@ namespace sld {
     //-------------------------------------------------------------------
 
     template<typename type>
+    struct single_linked_node {
+        single_linked_node<type>* next;
+        type                      element;        
+    };
+
+    template<typename type>
     struct single_linked_list {
-        single_linked_node<type>* first;        
-        single_linked_node<type>* last;        
+
+        using node = single_linked_node<type>; 
+
+        node* first;        
+        node* last;
     };
 
     //-------------------------------------------------------------------
@@ -373,9 +383,20 @@ namespace sld {
     //-------------------------------------------------------------------
 
     template<typename type>
+    struct double_linked_node {
+
+        double_linked_node<type>* next;
+        double_linked_node<type>* prev;
+        type                      element;        
+    };
+
+    template<typename type>
     struct double_linked_list {
-        single_linked_node<type>* first;        
-        single_linked_node<type>* last;        
+
+        using node = double_linked_node<type>;
+        
+        node* first;        
+        node* last;        
     };
 
     //-------------------------------------------------------------------
