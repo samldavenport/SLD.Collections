@@ -43,12 +43,12 @@ namespace sld {
     struct array;
     struct stack;
     struct queue;
-    struct array_li st;
+    struct array_list;
     struct stack_list;
     struct queue_list;
     struct heap;
     struct set;
-    struct hash_map;
+    struct dictionary;
     struct sparse_array;
     struct single_linked_list;
     struct single_linked_node;
@@ -77,19 +77,19 @@ namespace sld {
         u32 size_used     (void)                                                         const;
         u32 copy_to       (const buffer*  to, const u32   offset = 0)                    const;
         u32 copy_to       (const buffer&  to, const u32   offset = 0)                    const;
-        u32 copy_to       (const u32 to_size, const byte* to_data, const u32 offset = 0) const;
         u32 append_to     (const buffer*  to, const u32   offset = 0)                    const;
         u32 append_to     (const buffer&  to, const u32   offset = 0)                    const;
+        u32 copy_to       (const u32 to_size, const byte* to_data, const u32 offset = 0) const;
         u32 append_to     (const u32 to_size, const byte* to_data, const u32 offset = 0) const;
         u32 to_sub_buffer (buffer*        to, const u32   start,   const u32 length)     const;        
         u32 to_sub_buffer (buffer&        to, const u32   start,   const u32 length)     const;        
     
         // mutable methods    
-        u32 copy_from   (const buffer* from, const u32 offset = 0);
-        u32 copy_from   (const buffer& from, const u32 offset = 0);
+        u32 copy_from   (const buffer* from,  const u32   offset = 0);
+        u32 append_from (const buffer* from,  const u32   offset = 0);
+        u32 copy_from   (const buffer& from,  const u32   offset = 0);
+        u32 append_from (const buffer& from,  const u32   offset = 0);
         u32 copy_from   (const u32 from_size, const byte* from_data, const u32 offset = 0);
-        u32 append_from (const buffer* from, const u32 offset = 0);
-        u32 append_from (const buffer& from, const u32 offset = 0);
         u32 append_from (const u32 from_size, const byte* from_data, const u32 offset = 0);
 
         // operators
@@ -109,36 +109,37 @@ namespace sld {
         // properties  
         t*  elements;
         u32 capacity;
-        u32 count;
 
         // static methods
-        static array<t>* create      (const u32 size);
-        static u32       memory_size (const u32 size);
-        static void      init        (const u32 size, byte* data);
+        static array<t>* create      (const u32 capacity);
+        static u32       memory_size (const u32 capacity);
+        static void      init        (const u32 capacity, vptr data);
         static void      destroy     (array<t>* b);
 
         // constant methods
-        u32 size_free   (void)                                                       const;
-        u32 size_used   (void)                                                       const;
-        u32 copy_to     (const array<t>* to, const u32 offset = 0)                   const;
-        u32 copy_to     (const array<t>& to, const u32 offset = 0)                   const;
-        u32 copy_to     (const u32 to_size,  const t* to_data, const u32 offset = 0) const;
-        u32 append_to   (const array<t>* to, const u32 offset = 0)                   const;
-        u32 append_to   (const array<t>& to, const u32 offset = 0)                   const;
-        u32 append_to   (const u32 to_size,  const t* to_data, const u32 offset = 0) const;
-        u32 to_sub_array (array<y>*        to, const u32   start,   const u32 length)     const;        
+        u32              size_free    (void)                                                            const;
+        u32              size_used    (void)                                                            const;
+        u32              copy_to      (const array<t>* to, const u32 offset = 0)                        const;
+        u32              copy_to      (const array<t>& to, const u32 offset = 0)                        const;
+        u32              append_to    (const array<t>* to, const u32 offset = 0)                        const;
+        u32              append_to    (const array<t>& to, const u32 offset = 0)                        const;
+        u32              copy_to      (const u32  to_size, const t*  to_elements, const u32 offset = 0) const;
+        u32              append_to    (const u32  to_size, const t*  to_elements, const u32 offset = 0) const;
+        u32              to_sub_array (array<y>*       to, const u32 start,       const u32 count)      const;        
     
         // mutable methods    
-        u32 copy_from   (const array<t>* from, const u32 offset = 0);
-        u32 copy_from   (const array<t>& from, const u32 offset = 0);
-        u32 copy_from   (const u32  from_size, const t* from_data, const u32 offset = 0);
-        u32 append_from (const array<t>* from, const u32 offset = 0);
-        u32 append_from (const array<t>& from, const u32 offset = 0);
-        u32 append_from (const u32 from_size,  const t* from_data, const u32 offset = 0);
+        u32              copy_from   (const array<t>* from, const u32 offset = 0);
+        u32              copy_from   (const array<t>& from, const u32 offset = 0);
+        u32              copy_from   (const u32  from_size, const t* from_elements, const u32 offset = 0);
+        u32              append_from (const array<t>* from, const u32 offset = 0);
+        u32              append_from (const array<t>& from, const u32 offset = 0);
+        u32              append_from (const u32  from_size, const t* from_elements, const u32 offset = 0);
 
         // operators
-        t& operator[] (const u32 index);
-        t* operator[] (const u32 index);
+        t&       operator[] (const u32 index);
+        t*       operator[] (const u32 index);
+        const t* operator[] (const u32 index) const;
+        const t& operator[] (const u32 index) const;
     };
 
     //-------------------------------------------------------------------
@@ -146,30 +147,45 @@ namespace sld {
     //-------------------------------------------------------------------
 
     template<typename t>
-    class array_list {
+    struct array_list {
         
-    private:
+        // properties
         t*  elements;
         u32 capacity;
         u32 count;
 
-    public:
+        // static methods
+        static array_list<t>* create      (const u32 capacity);
+        static u32            memory_size (const u32 capacity);
+        static void           init        (const u32 capacity, vptr data);
+        static void           destroy     (array_list<t>* al);
 
-        buffer* to_buffer  (void) const;
-        u32     size_total (void) const;
-        u32     size_free  (void) const;
-        u32     size_used  (void) const;
-        u32     capacity   (void) const;
-        u32     count      (void) const;
-        u32     index_of   (const t* element) const;
+        // constant methods
+        u32 size_total        (void)                                                        const;
+        u32 size_free         (void)                                                        const;
+        u32 size_used         (void)                                                        const;
+        u32 index_of          (const t* element)                                            const;
+        u32 to_buffer         (buffer*        to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_buffer         (buffer&        to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_array          (array<t>*      to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_array          (array<t>&      to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_sub_array_list (array_list<t>* to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_sub_array_list (array_list<t>& to, const u32 index = 0, const u32 count = 0) const;
 
-        u32     add        (const t* element);
-        u32     add        (const t* element, const u32 count);
+        // mutable methods
+        void reset      (void);
+        void reverse    (void);
+        u32  remove     (const t* element);
+        u32  remove_at  (const u32 index, const u32 count = 0);
+        u32  push_back  (const t* elements, const u32 count = 1);
+        u32  push_front (const t* elements, const u32 count = 1);
+        void insert_at  (const t* elements, const u32 index, const u32 count = 1);
 
-        byte*       operator[] (u32 index);
-        const byte* operator[] (u32 index) const;
-        byte&       operator[] (u32 index);
-        const byte& operator[] (u32 index) const;
+        // operators
+        t*       operator[] (u32 index);
+        const t* operator[] (u32 index) const;
+        t&       operator[] (u32 index);
+        const t& operator[] (u32 index) const;
     };
 
     //-------------------------------------------------------------------
@@ -184,24 +200,25 @@ namespace sld {
         u32   ptr;
 
         // static methods
-        static stack* create           (const u32 size);
-        static u32    memory_size      (const u32 size);
-        static void   init             (const u32 size, void* memory);
-        static void   destroy          (stack* stack);
+        static stack* create       (const u32 size);
+        static u32    memory_size  (const u32 size);
+        static void   init         (const u32 size, void* memory);
+        static void   destroy      (stack* stack);
 
         // constant methods        
-        bool          validate         (void)           const;
-        void          assert_valid     (void)           const;
-        u32           size_used        (void)           const;
-        u32           size_free        (void)           const;
-        void          to_buffer        (buffer* buffer) const;
-        void          to_buffer        (buffer& buffer) const;
+        bool          validate     (void)           const;
+        void          assert_valid (void)           const;
+        u32           size_used    (void)           const;
+        u32           size_free    (void)           const;
+        const byte*   peek         (const u32 size) const;
+        void          to_buffer    (buffer* to)     const;
+        void          to_buffer    (buffer& to)     const;
         
         // mutable methods
-        void          reset            (void);
-        const byte*   peek             (const u32 size);
-        byte*         pull             (const u32 size);
-        u32           push             (const u32 size, const byte* data);
+        void          reset        (void);
+        const byte*   peek         (const u32 size);
+        byte*         pull         (const u32 size);
+        u32           push         (const u32 size, const byte* data);
     };
 
 
@@ -209,86 +226,225 @@ namespace sld {
     // STACK LIST
     //-------------------------------------------------------------------
 
-    template<typename t> stack_list<t>* stack_list_create           (const u32 size);
-    template<typename t> void           stack_list_destroy          (stack_list<t>* sl);
-    template<typename t> u32            stack_list_memory_size      (const u32 size);
-    template<typename t> stack_list<t>* stack_list_init_from_memory (void* memory, const u32 size);
-    template<typename t> bool           stack_list_validate         (const stack_list<t>* sl);
-    template<typename t> void           stack_list_assert_valid     (const stack_list<t>* sl);
-    template<typename t> u32            stack_list_head             (const stack_list<t>* sl);
-    template<typename t> buffer*        stack_list_to_buffer        (const stack_list<t>* sl);
-    template<typename t> u32            stack_list_size_total       (const stack_list<t>* sl);
-    template<typename t> u32            stack_list_size_used        (const stack_list<t>* sl);
-    template<typename t> u32            stack_list_size_free        (const stack_list<t>* sl);
-    template<typename t> const byte*    stack_list_peek             (const stack_list<t>* sl, const u32 size);
-    template<typename t> void           stack_list_reset            (stack_list<t>* sl);
-    template<typename t> byte*          stack_list_push             (stack_list<t>* sl, const u32 size);
-    template<typename t> byte*          stack_list_pull             (stack_list<t>* sl, const u32 size);
+    template<typename t>
+    struct stack_list {
 
+        // properties
+        t*  elements;
+        u32 capacity;
+        u32 count;
+
+        // static methods
+        static stack* create       (const u32 capacity);
+        static u32    memory_size  (const u32 capacity);
+        static void   init         (const u32 size, void* memory);
+        static void   destroy      (stack_list<t>* sl);
+
+        // constant methods        
+        bool          validate     (void)            const;
+        void          assert_valid (void)            const;
+        const t*      peek         (const u32 count) const;
+        u32           size_used    (void)            const;
+        u32           size_free    (void)            const;
+        void          to_buffer    (buffer* buffer)  const;
+        void          to_buffer    (buffer& buffer)  const;
+
+        // mutable methods
+        void          reset        (void);
+        t*            pull         (const u32 count);
+        u32           push         (const u32 count, const t* elements);
+
+    };
 
     //-------------------------------------------------------------------
     // QUEUE
     //-------------------------------------------------------------------
 
-    class queue {
+    struct queue {
 
-    private:
+        // properties
+        byte* data;
+        u32   size;
+        u32   head;
+        u32   tail;
 
-        byte* _data;
-        u32   _size;
-        u32   _stride;
-        u32   _head;
-        u32   _tail;
+        // static methods
+        static stack*              create       (const u32 capacity);
+        static u32                 memory_size  (const u32 capacity);
+        static void                init         (const u32 size, void* memory);
+        static void                destroy      (queue q);
+        
+        // constant methods
+        bool                       validate     (void)           const;
+        void                       assert_valid (void)           const;
+        u32                        size_used    (void)           const;
+        u32                        size_free    (void)           const;
+        void                       to_buffer    (buffer* buffer) const;
+        void                       to_buffer    (buffer& buffer) const;
+        template<typename t> void  to_array     (array<t>* buffer) const;
+        template<typename t> void  to_array     (array<t>& buffer) const;
 
-    public:
-
-        queue (const u32 size, const u32 stride);
-        queue (const u32 size, const u32 stride, byte* mem);
-
-        const buffer* to_buffer  (void)            const;
-        u32           size_total (void)            const;
-        u32           size_used  (void)            const;
-        u32           size_free  (void)            const;
-        const byte*   peek       (const u32 count) const;
-        const byte&   peek       (const u32 count) const;
-
-        u32   enqueue (const u32 size, const byte* data);
-        byte* dequeue (const u32 size);
+        // mutable methods
+        void        reset        (void);
+        const byte* peek         (void);
+        byte*       dequeue      (const u32 size);
+        u32         enqueue      (const u32 size, const byte* data,);
     };
-
 
     //-------------------------------------------------------------------
     // QUEUE LIST
     //-------------------------------------------------------------------
 
     template<typename t>
-    class queue_list {
+    struct queue_list {
+
+        // properties
+        t*    elements;
+        u32   capacity;
+        u32   head;
+        u32   tail;
+
+        // static methods
+        static stack* create           (const u32 capacity);
+        static u32    memory_size      (const u32 capacity);
+        static void   init             (const u32 size, void* memory);
+        static void   destroy          (queue q);
         
-    private:
+        // constant methods
+        bool                       validate     (void)             const;
+        void                       assert_valid (void)             const;
+        u32                        size_used    (void)             const;
+        u32                        size_free    (void)             const;
+        const t*                   peek         (const u32 size)   const;
+        void                       to_buffer    (buffer*   buffer) const;
+        void                       to_buffer    (buffer&   buffer) const;
+        template<typename t> void  to_array     (array<t>* array)  const;
+        template<typename t> void  to_array     (array<t>& array)  const;
 
-        t*  _elements;
-        u32 _capacity;
-        u32 _head;
-        u32 _tail;
-    
-    public:
-
-        queue_list (const u32 size);
-        queue_list (const u32 size, byte* mem);
-
-        const buffer* to_buffer  (void)                const;
-        u32           size_total (void)                const;
-        u32           size_used  (void)                const;
-        u32           size_free  (void)                const;
-        u32           capacity   (void) const;
-        u32           count      (void) const;
-        const byte&   peek       (const u32 count = 0) const;
-
-        u32 enqueue (const t* element, const u32 count = 0);
-        u32 enqueue (const t& element);
-        t*  dequeue (const u32 count = 0);
-        t&  dequeue (const u32 count);
+        // mutable methods
+        void        reset   (void);
+        const byte* peek    (void);
+        t*          dequeue (const u32 count);
+        u32         enqueue (const t* elements, const u32 count = 1);
     };
+
+
+    //-------------------------------------------------------------------
+    // MAP
+    //-------------------------------------------------------------------
+
+    template<typename key, typename value>
+    struct map {
+
+        // properties
+        key*   keys;
+        value* values;
+        u32*   hashes;
+        u32    capacity;
+        u32    count;
+
+        // static methods
+        static stack* create       (const u32 capacity);
+        static u32    memory_size  (const u32 capacity);
+        static void   init         (const u32 size, void* memory);
+        static void   destroy      (map<key,value>* m);
+        static u32    hash_of      (const key& k);   
+        static void   hash_of      (const key& k*, const u32 count, u32* hashes);
+
+        // constant methods
+        bool          validate     (void)                              const;
+        void          assert_valid (void)                              const;
+        u32           size_used    (void)                              const;
+        u32           size_free    (void)                              const;
+        bool          exists       (const k& key)                      const;
+        bool          exists       (const k* key, const u32 count = 1) const;
+
+        // mutable methods
+        void          reset        (void);
+        bool          remove       (const key& k);
+        u32           remove       (const key* k, const u32 count = 1);
+        bool          insert       (const key& k, const value v&); 
+        u32           insert       (const key* k, const value v*, const u32 count = 1); 
+
+        // operators
+        value*        operator[]   (const key* k);
+        value&        operator[]   (const key* k);
+        value*        operator[]   (const key& k);
+        value&        operator[]   (const key& k);
+        const value*  operator[]   (const key* k) const;
+        const value&  operator[]   (const key* k) const;
+        const value*  operator[]   (const key& k) const;
+        const value&  operator[]   (const key& k) const;
+    };
+
+    //-------------------------------------------------------------------
+    // SET
+    //-------------------------------------------------------------------
+
+    template<typename t>
+    struct set {
+        
+        // properties
+        t*   elements;
+        u32* hashes
+        u32  capacity;
+        u32  count;
+
+        // static methods
+        static array_list<t>* create      (const u32 capacity);
+        static u32            memory_size (const u32 capacity);
+        static void           init        (const u32 capacity, vptr data);
+        static void           destroy     (array_list<t>* al);
+        static u32            hash_of     (const t* element);
+
+        // constant methods
+        u32 size_total        (void)                                                        const;
+        u32 size_free         (void)                                                        const;
+        u32 size_used         (void)                                                        const;
+        u32 index_of          (const t* element)                                            const;
+        u32 to_buffer         (buffer*        to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_buffer         (buffer&        to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_array          (array<t>*      to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_array          (array<t>&      to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_sub_array_list (array_list<t>* to, const u32 index = 0, const u32 count = 0) const;
+        u32 to_sub_array_list (array_list<t>& to, const u32 index = 0, const u32 count = 0) const;
+
+        // mutable methods
+        void reset      (void);
+        void reverse    (void);
+        u32  remove     (const t* element);
+        u32  remove_at  (const u32 index, const u32 count = 0);
+        u32  push_back  (const t* elements, const u32 count = 1);
+        u32  push_front (const t* elements, const u32 count = 1);
+        void insert_at  (const t* elements, const u32 index, const u32 count = 1);
+
+        // operators
+        t*       operator[] (u32 index);
+        t&       operator[] (u32 index);
+        const t* operator[] (u32 index) const;
+        const t& operator[] (u32 index) const;
+    };
+
+    //-------------------------------------------------------------------
+    // SPARSE ARRAY
+    //-------------------------------------------------------------------
+
+    template<typename t>
+    struct sparse_array {
+
+        // properties
+        t*   sparse_elements;
+        u32* dense_indexes;
+        u32* dense_hashes;
+        f32  percentage_max;
+        u32  capacity;
+        u32  count;
+
+    };
+
+    //-------------------------------------------------------------------
+    // UTILITIES
+    //-------------------------------------------------------------------
 
     constexpr inline u64  size_kilobytes   (const u64 n_kilobytes)               { return (n_kilobytes * 1024);                               }
     constexpr inline u64  size_megabytes   (const u64 n_megabytes)               { return (n_megabytes * 1024 * 1024);                        }
