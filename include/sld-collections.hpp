@@ -107,60 +107,69 @@ namespace sld {
     SLD_TEMPLATE_KEY_VALUE class map_32;
     SLD_TEMPLATE_KEY_VALUE class map_64; 
     SLD_TEMPLATE_KEY_VALUE class map_128;
-    SLD_TEMPLATE_KEY_VALUE class sparse_array_32;
-    SLD_TEMPLATE_KEY_VALUE class sparse_array_64;
-    SLD_TEMPLATE_KEY_VALUE class sparse_array_128;
+    SLD_TEMPLATE_KEY_VALUE class sparse_set_32;
+    SLD_TEMPLATE_KEY_VALUE class sparse_set_64;
+    SLD_TEMPLATE_KEY_VALUE class sparse_set_128;
 
 #if SLD_COLLECTIONS_DEFAULT_HASH == 64
-    using set          = set_64;
-    using map          = map_64;
-    using sparse_array = sparse_array_64;
+    using set        = set_64;
+    using map        = map_64;
+    using sparse_set = sparse_set_64;
 #elif SLD_COLLECTIONS_DEFAULT_HASH == 128
-    using set          = set_128;
-    using map          = map_128;
-    using sparse_array = sparse_array_128;
+    using set        = set_128;
+    using map        = map_128;
+    using sparse_set = sparse_set_128;
 #else
-    using set          = set_32;
-    using map          = map_32;
-    using sparse_array = sparse_array_32;
+    using set        = set_32;
+    using map        = map_32;
+    using sparse_set = sparse_set_32;
 #endif
 
     //-------------------------------------------------------------------
     // DATA BUFFER
     //-------------------------------------------------------------------
     
-    struct SLD_COLLECTIONS_API data_buffer {
+    class SLD_COLLECTIONS_API data_buffer {
 
+    private:
+        
         // properties  
-        byte* data;
-        u32   size;
-        u32   length;
+        byte* _data;
+        u32   _size;
+        u32   _length;
+
+    public:
 
         // static methods
-        static data_buffer* create      (const u32 buffer_size);
-        static u32          memory_size (const u32 buffer_size);
-        static data_buffer* init        (const u32 memory_size, vptr memory_ptr);
-        static void         destroy     (data_buffer* db);
+        static u32 memory_size (const u32 buffer_size);
+        
+        // constructor
+        data_buffer(const u32 buffer_size);
+        data_buffer(const u32 buffer_size, byte* buffer_data);
+        data_buffer(const u32 memory_size, vptr memory_ptr);
+
+        // destructor
+        ~data_buffer();
 
         // constant methods
-        bool is_valid      (void);
-        void assert_valid  (void);
-        u32  size_free     (void);                                                              const;
+        bool is_valid      (void);                                                             const;
+        void assert_valid  (void);                                                             const;
+        u32  size_free     (void);                                                             const;
         u32  copy_to       (const data_buffer*  to, const u32   offset = 0)                    const;
         u32  copy_to       (const data_buffer&  to, const u32   offset = 0)                    const;
+        u32  copy_to       (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
         u32  append_to     (const data_buffer*  to, const u32   offset = 0)                    const;
         u32  append_to     (const data_buffer&  to, const u32   offset = 0)                    const;
-        u32  copy_to       (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
         u32  append_to     (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
         u32  to_sub_buffer (data_buffer*        to, const u32   start,   const u32 length)     const;        
         u32  to_sub_buffer (data_buffer&        to, const u32   start,   const u32 length)     const;        
     
         // mutable methods    
         u32 copy_from   (const data_buffer* from, const u32   offset = 0);
-        u32 append_from (const data_buffer* from, const u32   offset = 0);
         u32 copy_from   (const data_buffer& from, const u32   offset = 0);
-        u32 append_from (const data_buffer& from, const u32   offset = 0);
         u32 copy_from   (const u32     from_size, const byte* from_data, const u32 offset = 0);
+        u32 append_from (const data_buffer* from, const u32   offset = 0);
+        u32 append_from (const data_buffer& from, const u32   offset = 0);
         u32 append_from (const u32     from_size, const byte* from_data, const u32 offset = 0);
 
         // operators
@@ -172,34 +181,46 @@ namespace sld {
     // STACK BUFFER
     //-------------------------------------------------------------------
 
-    struct stack_buffer {
+    class SLD_COLLECTIONS_API stack_buffer {
+
+    private:
 
         // properties
-        byte* data;
-        u32   size;
-        u32   ptr;
+        byte* _data;
+        u32   _size;
+        u32   _ptr;
+
+    public:
 
         // static methods
-        static stack* create       (const u32 size);
-        static u32    memory_size  (const u32 size);
-        static void   init         (const u32 size, void* memory);
-        static void   destroy      (stack_buffer* stack);
+        static u32 memory_size (const u32 size);
+        
+        // constructor
+        stack_buffer(const u32 buffer_size);
+        stack_buffer(const u32 buffer_size, byte* buffer_data);
+        stack_buffer(const u32 mem_size,    vptr  mem_ptr);
+
+        // destructor
+        ~stack_buffer();
 
         // constant methods        
-        bool          is_valid       (void)            const;
-        void          assert_valid   (void)            const;
-        u32           size_used      (void)            const;
-        u32           size_free      (void)            const;
-        const byte*   peek           (const u32 size)  const;
-        u32           to_data_buffer (data_buffer* to) const;
-        u32           to_data_buffer (data_buffer& to) const;
+        bool        is_valid       (void)            const;
+        void        assert_valid   (void)            const;
+        u32         size_used      (void)            const;
+        u32         size_free      (void)            const;
+        const byte* peek           (const u32 size)  const;
+        u32         to_data_buffer (data_buffer* to) const;
+        u32         to_data_buffer (data_buffer& to) const;
         
         // mutable methods
-        void                  reset       (void);
-        byte*                 pull        (const u32 size);
-        u32                   push        (const u32 size, const byte* data);
-        SLD_TEMPLATE_TYPE u32 pull_struct (const u32 count = 1);
-        SLD_TEMPLATE_TYPE u32 push_struct (const u32 count = 1);
+        void                    reset             (void);
+        u32                     push_data         (const u32   size,     const byte* data);
+        SLD_TEMPLATE_TYPE bool  push_struct<type> (const type& element);
+        SLD_TEMPLATE_TYPE u32   push_struct<type> (const type* elements, const u32 count = 1);
+        byte*                   pull_data         (const u32   size);
+        SLD_TEMPLATE_TYPE bool  pull_struct<type> (type& element);
+        SLD_TEMPLATE_TYPE type* pull_struct<type> (const u32 count = 1);
+
     };
 
     //-------------------------------------------------------------------
@@ -414,20 +435,38 @@ namespace sld {
     //-------------------------------------------------------------------
 
     template<typename type>
-    struct double_linked_node {
+    class double_linked_list {
 
-        double_linked_node<type>* next;
-        double_linked_node<type>* prev;
-        type                      element;        
-    };
-
-    template<typename type>
-    struct double_linked_list {
-
-        using node = double_linked_node<type>;
+    public:
+        struct node : type {
+            double_linked_list<type>* list;
+            node*                     next;
+            node*                     prev;
+        };
         
-        node* first;        
-        node* last;        
+    private:
+
+        // properties
+        node* _first;        
+        node* _last;
+
+    public:
+
+        static u32 list_size();    
+        static u32 node_size();    
+
+        double_linked_list();
+        ~double_linked_list();
+
+        node* first ();
+        node* last  ();
+
+        node* create_node (const u32 count = 1);
+        bool  delete_node (node* n, const u32 count = 1);
+
+        insert_first  (node* n);
+        insert_last   (node* n);
+        insert_before (node* n);
     };
 
     //-------------------------------------------------------------------
