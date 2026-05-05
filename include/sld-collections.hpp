@@ -85,31 +85,31 @@ namespace sld {
     //-------------------------------------------------------------------
 
     // buffer collections
-    struct data_buffer;
-    struct stack_buffer;
-    struct queue_buffer;
+    class data_buffer;
+    class stack_buffer;
+    class queue_buffer;
     
     // list collections
-    SLD_TEMPLATE_TYPE struct array_list;
-    SLD_TEMPLATE_TYPE struct stack_list;
-    SLD_TEMPLATE_TYPE struct queue_list;
+    SLD_TEMPLATE_TYPE class array_list;
+    SLD_TEMPLATE_TYPE class stack_list;
+    SLD_TEMPLATE_TYPE class queue_list;
 
     // linked collections
-    SLD_TEMPLATE_TYPE struct single_linked_list;
-    SLD_TEMPLATE_TYPE struct single_linked_node;
-    SLD_TEMPLATE_TYPE struct double_linked_list;
-    SLD_TEMPLATE_TYPE struct double_linked_node;
+    SLD_TEMPLATE_TYPE class single_linked_list;
+    SLD_TEMPLATE_TYPE class single_linked_node;
+    SLD_TEMPLATE_TYPE class double_linked_list;
+    SLD_TEMPLATE_TYPE class double_linked_node;
 
     // hash collections
-    SLD_TEMPLATE_TYPE      struct set_32;
-    SLD_TEMPLATE_TYPE      struct set_64;
-    SLD_TEMPLATE_TYPE      struct set_128;
-    SLD_TEMPLATE_KEY_VALUE struct map_32;
-    SLD_TEMPLATE_KEY_VALUE struct map_64; 
-    SLD_TEMPLATE_KEY_VALUE struct map_128;
-    SLD_TEMPLATE_KEY_VALUE struct sparse_array_32;
-    SLD_TEMPLATE_KEY_VALUE struct sparse_array_64;
-    SLD_TEMPLATE_KEY_VALUE struct sparse_array_128;
+    SLD_TEMPLATE_TYPE      class set_32;
+    SLD_TEMPLATE_TYPE      class set_64;
+    SLD_TEMPLATE_TYPE      class set_128;
+    SLD_TEMPLATE_KEY_VALUE class map_32;
+    SLD_TEMPLATE_KEY_VALUE class map_64; 
+    SLD_TEMPLATE_KEY_VALUE class map_128;
+    SLD_TEMPLATE_KEY_VALUE class sparse_array_32;
+    SLD_TEMPLATE_KEY_VALUE class sparse_array_64;
+    SLD_TEMPLATE_KEY_VALUE class sparse_array_128;
 
 #if SLD_COLLECTIONS_DEFAULT_HASH == 64
     using set          = set_64;
@@ -242,43 +242,60 @@ namespace sld {
     //-------------------------------------------------------------------
 
     template<typename type>
-    struct array_list {
+    class array_list {
         
+    private:
+    
         // properties
-        type* elements;
-        u32   capacity;
-        u32   count;
+        type* _elements;
+        u32   _capacity;
+        u32   _count;
+        b64   _internal;
+
+    public:
 
         // static methods
-        static array_list<t>* create      (const u32 capacity);
-        static u32            memory_size (const u32 capacity);
-        static void           init        (const u32 capacity, vptr data);
-        static void           destroy     (array_list<type>* al);
+        static u32 memory_size (const u32 capacity);
+
+        // constructors
+        array_list (const u32 capacity);
+        array_list (const u32 capacity, type* elements);
+        array_list (const u32 mem_size, vptr  mem_ptr);
+
+        // destructors
+        ~array_list();
 
         // constant methods
-        u32 size_total        (void)                                                        const;
-        u32 size_free         (void)                                                        const;
-        u32 size_used         (void)                                                        const;
-        u32 index_of          (const t* element)                                            const;
+        u32 size_total        (void)                                                           const;
+        u32 size_free         (void)                                                           const;
+        u32 size_used         (void)                                                           const;
+        u32 index_of          (const t* element)                                               const;
         u32 to_buffer         (buffer*           to, const u32 index = 0, const u32 count = 0) const;
         u32 to_buffer         (buffer&           to, const u32 index = 0, const u32 count = 0) const;
         u32 to_sub_array_list (array_list<type>* to, const u32 index = 0, const u32 count = 0) const;
         u32 to_sub_array_list (array_list<type>& to, const u32 index = 0, const u32 count = 0) const;
 
         // mutable methods
-        void reset      (void);
-        void reverse    (void);
-        u32  remove     (const type* element);
-        u32  remove_at  (const u32 index, const u32 count = 0);
-        u32  push_back  (const type* elements, const u32 count = 1);
-        u32  push_front (const type* elements, const u32 count = 1);
-        void insert_at  (const type* elements, const u32 index, const u32 count = 1);
+        void reset            (void);
+        void reverse          (void);
+        u32  remove           (const type* element);
+        u32  remove_at        (const u32   index,    const u32 index = 0);
+        u32  push_back        (const type* elements, const u32 count = 1);
+        u32  push_front       (const type* elements, const u32 count = 1);
+        void insert_at        (const type* elements, const u32 index, const u32 count = 1);
 
+        // inline methods
+        inline const u32 capacity (void) { return(this->_capacity); }
+        inline const u32 count    (void) { return(this->_count);    }
+        inline const u32 internal (void) { return(this->_internal); }        
+        
         // operators
         type*       operator[] (u32 index);
         type&       operator[] (u32 index);
         const type* operator[] (u32 index) const;
         const type& operator[] (u32 index) const;
+
+
     };
 
     //-------------------------------------------------------------------
@@ -286,23 +303,39 @@ namespace sld {
     //-------------------------------------------------------------------
 
     template<typename type>
-    struct stack_list {
+    class stack_list {
 
+    private:
+        
         // properties
-        type* elements;
-        u32   capacity;
-        u32   count;
+        type* _elements;
+        u32   _capacity;
+        u32   _count;
+        b64   _internal;
+
+    public:
 
         // static methods
-        static stack_list<type>* create      (const u32 capacity);
-        static u32               memory_size (const u32 capacity);
-        static void              init        (const u32 size, void* memory);
-        static void              destroy     (stack_list<type>* sl);
+        static u32 memory_size (const u32 capacity);
+
+        // constructors
+        stack_list (const u32 capacity);        
+        stack_list (const u32 capacity, type* elements);        
+        stack_list (const u32 mem_size, vptr  mem_ptr);        
+
+        // destructors
+        ~stack_list();
 
         // constant methods        
-        bool          validate       (void)                const;
+        bool          is_valid       (void)                const;
         void          assert_valid   (void)                const;
-        const t*      peek           (const u32 count)     const;
+        const type*   peek           (const u32 count)     const;
+        const type&   peek           (const u32 count)     const;
+        const type*   head           (void)                const;
+        const type&   head           (void)                const;
+        const type*   tail           (void)                const;
+        const type&   tail           (void)                const;
+        u32           size_total     (void)                const;
         u32           size_used      (void)                const;
         u32           size_free      (void)                const;
         void          to_data_buffer (data_buffer* buffer) const;
@@ -311,8 +344,13 @@ namespace sld {
         // mutable methods
         void          reset        (void);
         type*         pull         (const u32 count);
+        bool          pull         (type& element);
         u32           push         (const u32 count, const type* elements);
+        bool          push         (const type& element);
 
+        // inline methods
+        inline u32 capacity (void) { return(this->capacity); }
+        inline u32 count    (void) { return(this->count);    }
     };
 
     //-------------------------------------------------------------------
