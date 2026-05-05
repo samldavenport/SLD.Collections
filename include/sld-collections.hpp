@@ -5,6 +5,12 @@
 #include <cstdint>
 #include <assert.h>
 
+#ifdef SLD_COLLECTIONS_DLL
+#   define SLD_COLLECTIONS_API __declspec(dllexport)
+#else
+#   define SLD_COLLECTIONS_API __declspec(dllimport)
+#endif
+
 #ifndef    SLD_COLLECTIONS_DEFAULT_HASH
 #   define SLD_COLLECTIONS_DEFAULT_HASH 32
 #endif
@@ -122,8 +128,8 @@ namespace sld {
     //-------------------------------------------------------------------
     // DATA BUFFER
     //-------------------------------------------------------------------
-
-    struct data_buffer {
+    
+    struct SLD_COLLECTIONS_API data_buffer {
 
         // properties  
         byte* data;
@@ -185,16 +191,15 @@ namespace sld {
         u32           size_used      (void)            const;
         u32           size_free      (void)            const;
         const byte*   peek           (const u32 size)  const;
-        void          to_data_buffer (data_buffer* to) const;
-        void          to_data_buffer (data_buffer& to) const;
+        u32           to_data_buffer (data_buffer* to) const;
+        u32           to_data_buffer (data_buffer& to) const;
         
         // mutable methods
-        void          reset        (void);
-        const byte*   peek         (const u32 size);
-        byte*         pull         (const u32 size);
-        u32           push         (const u32 size, const byte* data);
-        template<typename type> u32 pull_struct (const u32 count = 1);
-        template<typename type> u32 push_struct (const u32 count = 1);
+        void                  reset       (void);
+        byte*                 pull        (const u32 size);
+        u32                   push        (const u32 size, const byte* data);
+        SLD_TEMPLATE_TYPE u32 pull_struct (const u32 count = 1);
+        SLD_TEMPLATE_TYPE u32 push_struct (const u32 count = 1);
     };
 
     //-------------------------------------------------------------------
@@ -289,19 +294,19 @@ namespace sld {
         u32   count;
 
         // static methods
-        static stack* create       (const u32 capacity);
-        static u32    memory_size  (const u32 capacity);
-        static void   init         (const u32 size, void* memory);
-        static void   destroy      (stack_list<type>* sl);
+        static stack_list<type>* create      (const u32 capacity);
+        static u32               memory_size (const u32 capacity);
+        static void              init        (const u32 size, void* memory);
+        static void              destroy     (stack_list<type>* sl);
 
         // constant methods        
-        bool          validate     (void)            const;
-        void          assert_valid (void)            const;
-        const t*      peek         (const u32 count) const;
-        u32           size_used    (void)            const;
-        u32           size_free    (void)            const;
-        void          to_buffer    (buffer* buffer)  const;
-        void          to_buffer    (buffer& buffer)  const;
+        bool          validate       (void)                const;
+        void          assert_valid   (void)                const;
+        const t*      peek           (const u32 count)     const;
+        u32           size_used      (void)                const;
+        u32           size_free      (void)                const;
+        void          to_data_buffer (data_buffer* buffer) const;
+        void          to_data_buffer (data_buffer& buffer) const;
 
         // mutable methods
         void          reset        (void);

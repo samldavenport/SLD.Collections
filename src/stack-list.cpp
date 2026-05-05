@@ -2,98 +2,49 @@
 
 #include "sld-collections.hpp"
 
+#define STACK_LIST_STATIC_FUNC template<typename type> static auto stack_list<type>::
+
+
 namespace sld {
     
-    //-------------------------------------------------------------------
-    // STACK LIST
-    //-------------------------------------------------------------------
+    STACK_LIST_STATIC_FUNC
+    create(
+        const u32 capacity) -> stack_list<type>* {
 
-    template<typename t>
-    struct stack_list {
-        t*  _elements;
-        u32 _capacity;
-        u32 _ptr;
-    };
-
-    //-------------------------------------------------------------------
-    // METHODS
-    //-------------------------------------------------------------------
-
-    template<typename t> stack_list<t>*
-    stack_list_create(
-        const u32 size) {
- 
         
     }
-    
-    template<typename t> void
-    stack_list_destroy(
-        stack_list<t>* sl) {
 
-    }
-    
-    template<typename t> u32
-    stack_list_memory_size(
-        const u32 size) {
-
-    }
-    
-    template<typename t> stack_list<t>*
-    stack_list_init_from_memory(
-        void*     memory,
-        const u32 size) {
-
-    }
-    
-    template<typename t> bool
-    stack_list_validate(
-        const stack_list<t>* sl) {
-
-    }
-    
-    template<typename t> void
-    stack_list_assert_valid(
-        const stack_list<t>* sl) {
-
-    }
-    
-    template<typename t> u32
-    stack_list_head(
-        const stack_list<t>* sl) {
+    STACK_LIST_STATIC_FUNC
+    memory_size(
+        const u32 capacity) -> u32 {
 
     }
 
-    template<typename t> buffer*
-    stack_list_to_buffer(
-        const stack_list<t>* sl);
-    
-    template<typename t> u32
-    stack_list_size_total(
-        const stack_list<t>* sl);
-    
-    template<typename t> u32
-    stack_list_size_used(
-        const stack_list<t>* sl);
-    
-    template<typename t> u32
-    stack_list_size_free(
-        const stack_list<t>* sl);
-    
-    template<typename t> const byte*
-    stack_list_peek(
-        const stack_list<t>* sl, const u32 size);
-    
-    template<typename t> void
-    stack_list_reset(
-        stack_list<t>* sl);
-    
-    template<typename t> byte*
-    stack_list_push(
-        stack_list<t>* sl, const u32 size);
-    
-    template<typename t> byte*
-    stack_list_pull(
-        stack_list<t>* sl, const u32 size);
+    STACK_LIST_STATIC_FUNC
+    init(
+        const u32 size,
+        void*     memory) -> stack_list<type>* {
 
+    }
+
+    STACK_LIST_STATIC_FUNC
+    destroy(
+        stack_list<type>* sl) -> void {
+
+    }
+
+    // constant methods        
+    bool          validate     (void)            const;
+    void          assert_valid (void)            const;
+    const t*      peek         (const u32 count) const;
+    u32           size_used    (void)            const;
+    u32           size_free    (void)            const;
+    void          to_buffer    (buffer* buffer)  const;
+    void          to_buffer    (buffer& buffer)  const;
+
+    // mutable methods
+    void          reset        (void);
+    type*         pull         (const u32 count);
+    u32           push         (const u32 count, const type* elements);
 
 };
