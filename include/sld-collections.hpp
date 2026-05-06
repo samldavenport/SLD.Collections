@@ -129,111 +129,70 @@ namespace sld {
     // DATA BUFFER
     //-------------------------------------------------------------------
     
-    class SLD_COLLECTIONS_API data_buffer {
-
-    private:
-        
-        // properties  
-        byte* _data;
-        u32   _size;
-        u32   _length;
-
-    public:
-
-        // static methods
-        static u32 memory_size (const u32 buffer_size);
-        
-        // constructor
-        data_buffer(const u32 buffer_size);
-        data_buffer(const u32 buffer_size, byte* buffer_data);
-        data_buffer(const u32 memory_size, vptr memory_ptr);
-
-        // destructor
-        ~data_buffer();
-
-        // constant methods
-        bool is_valid      (void);                                                             const;
-        void assert_valid  (void);                                                             const;
-        u32  size_free     (void);                                                             const;
-        u32  copy_to       (const data_buffer*  to, const u32   offset = 0)                    const;
-        u32  copy_to       (const data_buffer&  to, const u32   offset = 0)                    const;
-        u32  copy_to       (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
-        u32  append_to     (const data_buffer*  to, const u32   offset = 0)                    const;
-        u32  append_to     (const data_buffer&  to, const u32   offset = 0)                    const;
-        u32  append_to     (const u32      to_size, const byte* to_data, const u32 offset = 0) const;
-        u32  to_sub_buffer (data_buffer*        to, const u32   start,   const u32 length)     const;        
-        u32  to_sub_buffer (data_buffer&        to, const u32   start,   const u32 length)     const;        
-    
-        // mutable methods    
-        u32 copy_from   (const data_buffer* from, const u32   offset = 0);
-        u32 copy_from   (const data_buffer& from, const u32   offset = 0);
-        u32 copy_from   (const u32     from_size, const byte* from_data, const u32 offset = 0);
-        u32 append_from (const data_buffer* from, const u32   offset = 0);
-        u32 append_from (const data_buffer& from, const u32   offset = 0);
-        u32 append_from (const u32     from_size, const byte* from_data, const u32 offset = 0);
-
-        // operators
-        byte&       operator[] (const u32 index);
-        const byte& operator[] (const u32 index) const;
+    struct buffer {
+        byte* data;
+        u32   size;
+        u32   length;
     };
+
+    // create/destroy methods
+    SLD_COLLECTIONS_API buffer* buffer_create             (const u32 buffer_size);
+    SLD_COLLECTIONS_API buffer* buffer_memory_init        (vptr mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void    buffer_destroy            (buffer* b);
+
+    // constant methods
+    SLD_COLLECTIONS_API bool    buffer_is_valid           (const buffer* b);
+    SLD_COLLECTIONS_API bool    buffer_assert_valid       (const buffer* b);
+    SLD_COLLECTIONS_API u32     buffer_memory_size        (const u32 buffer_size);
+    SLD_COLLECTIONS_API u32     buffer_size_remaining     (const buffer* b);
+    SLD_COLLECTIONS_API u32     buffer_append_from_a_to_b (const buffer* ba, const u32   ba_offset,  buffer*       bb);
+    SLD_COLLECTIONS_API u32     buffer_copy_to_dst        (const buffer* b,  const u32   b_offset,   const byte*   dst_memory, const u32 dst_size);
+    SLD_COLLECTIONS_API u32     buffer_copy_from_a_to_b   (const buffer* ba, const u32   ba_offset,  const buffer* bb,         const u32 bb_offset);
+
+    // mutable methods
+    SLD_COLLECTIONS_API void    buffer_reset              (buffer* b);
+    SLD_COLLECTIONS_API u32     buffer_append_from_src    (buffer* b, const byte* src_memory, const u32   src_size);
+    SLD_COLLECTIONS_API u32     buffer_copy_from_src      (buffer* b, const u32   b_offset,   const byte* src_memory, const u32 src_size);
 
     //-------------------------------------------------------------------
     // STACK BUFFER
     //-------------------------------------------------------------------
 
-    class SLD_COLLECTIONS_API stack_buffer {
-
-    private:
-
-        // properties
-        byte* _data;
-        u32   _size;
-        u32   _ptr;
-
-    public:
-
-        // static methods
-        static u32 memory_size (const u32 size);
-        
-        // constructor
-        stack_buffer(const u32 buffer_size);
-        stack_buffer(const u32 buffer_size, byte* buffer_data);
-        stack_buffer(const u32 mem_size,    vptr  mem_ptr);
-
-        // destructor
-        ~stack_buffer();
-
-        // constant methods        
-        bool        is_valid       (void)            const;
-        void        assert_valid   (void)            const;
-        u32         size_used      (void)            const;
-        u32         size_free      (void)            const;
-        const byte* peek           (const u32 size)  const;
-        u32         to_data_buffer (data_buffer* to) const;
-        u32         to_data_buffer (data_buffer& to) const;
-        
-        // mutable methods
-        void                    reset             (void);
-        u32                     push_data         (const u32   size,     const byte* data);
-        SLD_TEMPLATE_TYPE bool  push_struct<type> (const type& element);
-        SLD_TEMPLATE_TYPE u32   push_struct<type> (const type* elements, const u32 count = 1);
-        byte*                   pull_data         (const u32   size);
-        SLD_TEMPLATE_TYPE bool  pull_struct<type> (type& element);
-        SLD_TEMPLATE_TYPE type* pull_struct<type> (const u32 count = 1);
-
+    struct stack_buffer {
+        byte* data;
+        u32   size;
+        u32   ptr;        
     };
+
+    // create/destroy methods
+    SLD_COLLECTIONS_API stack_buffer* stack_buffer_create         (const u32 size);
+    SLD_COLLECTIONS_API stack_buffer* stack_buffer_memory_init    (vptr mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void          stack_buffer_destroy        (stack_buffer* sb);    
+
+    // constant methods
+    SLD_COLLECTIONS_API u32           stack_buffer_memory_size    (const u32 size);
+    SLD_COLLECTIONS_API bool          stack_buffer_is_valid       (const stack_buffer* sb);
+    SLD_COLLECTIONS_API void          stack_buffer_assert_valid   (const stack_buffer* sb);
+    SLD_COLLECTIONS_API u32           stack_buffer_size_remaining (const stack_buffer* sb);
+    SLD_COLLECTIONS_API const byte*   stack_buffer_head           (const stack_buffer* sb);
+    SLD_COLLECTIONS_API const byte*   stack_buffer_tail           (const stack_buffer* sb);
+    SLD_COLLECTIONS_API const byte*   stack_buffer_peek           (const stack_buffer* sb, const u32 size);
+
+    // mutable methods
+    SLD_COLLECTIONS_API void          stack_buffer_reset          (stack_buffer* sb);
+    SLD_COLLECTIONS_API u32           stack_buffer_push_data      (stack_buffer* sb, const u32 size, const byte* data);
+    SLD_COLLECTIONS_API byte*         stack_buffer_pull_data      (stack_buffer* sb, const u32 size);
 
     //-------------------------------------------------------------------
     // QUEUE BUFFER
     //-------------------------------------------------------------------
 
     struct queue_buffer {
-
-        // properties
         byte* data;
         u32   size;
         u32   head;
         u32   tail;
+    };
 
         // static methods
         static stack*              create       (const u32 capacity);
