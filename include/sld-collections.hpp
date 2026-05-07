@@ -11,13 +11,6 @@
 #   define SLD_COLLECTIONS_API __declspec(dllimport)
 #endif
 
-#ifndef    SLD_COLLECTIONS_DEFAULT_HASH
-#   define SLD_COLLECTIONS_DEFAULT_HASH 32
-#endif
-
-#define SLD_TEMPLATE_TYPE      template<typename type>
-#define SLD_TEMPLATE_KEY_VALUE template<typename key, typename value>
-
 namespace sld {
 
     //-------------------------------------------------------------------
@@ -77,108 +70,78 @@ namespace sld {
 
     // memory
     typedef u8       byte;
-    typedef void*    vptr;
+    typedef vptr     void*;
     typedef intptr_t addr;
+    typedef u32      index;
+    typedef void     element;
+    typedef void     key;
+    typedef void     value;
 
-    //-------------------------------------------------------------------
-    // COLLECTIONS
-    //-------------------------------------------------------------------
+    // hash
+    typedef u32  h32;
+    typedef u64  h64;
+    typedef u128 h128;
 
     // buffer collections
-    class data_buffer;
-    class stack_buffer;
-    class queue_buffer;
-    
-    // list collections
-    SLD_TEMPLATE_TYPE class array_list;
-    SLD_TEMPLATE_TYPE class stack_list;
-    SLD_TEMPLATE_TYPE class queue_list;
+    struct data_buffer;
+    struct stack_buffer;
+    struct queue_buffer;
 
-    // linked collections
-    SLD_TEMPLATE_TYPE class single_linked_list;
-    SLD_TEMPLATE_TYPE class single_linked_node;
-    SLD_TEMPLATE_TYPE class double_linked_list;
-    SLD_TEMPLATE_TYPE class double_linked_node;
+    // list collections
+    struct array_list;
+    struct stack_list;
+    struct queue_list;
+    struct single_linked_list;
+    struct single_linked_node;
+    struct double_linked_list;
+    struct double_linked_node;
 
     // hash collections
-    SLD_TEMPLATE_TYPE      class set_32;
-    SLD_TEMPLATE_TYPE      class set_64;
-    SLD_TEMPLATE_TYPE      class set_128;
-    SLD_TEMPLATE_KEY_VALUE class map_32;
-    SLD_TEMPLATE_KEY_VALUE class map_64; 
-    SLD_TEMPLATE_KEY_VALUE class map_128;
-    SLD_TEMPLATE_KEY_VALUE class sparse_set_32;
-    SLD_TEMPLATE_KEY_VALUE class sparse_set_64;
-    SLD_TEMPLATE_KEY_VALUE class sparse_set_128;
-
-#if SLD_COLLECTIONS_DEFAULT_HASH == 64
-    using set        = set_64;
-    using map        = map_64;
-    using sparse_set = sparse_set_64;
-#elif SLD_COLLECTIONS_DEFAULT_HASH == 128
-    using set        = set_128;
-    using map        = map_128;
-    using sparse_set = sparse_set_128;
-#else
-    using set        = set_32;
-    using map        = map_32;
-    using sparse_set = sparse_set_32;
-#endif
+    struct set_32;
+    struct set_64;
+    struct set_128;
+    struct map_32;
+    struct map_64; 
+    struct map_128;
+    struct sparse_set_32;
+    struct sparse_set_64;
+    struct sparse_set_128;
 
     //-------------------------------------------------------------------
     // DATA BUFFER
     //-------------------------------------------------------------------
-    
-    struct buffer {
-        byte* data;
-        u32   size;
-        u32   length;
-    };
 
-    // create/destroy methods
-    SLD_COLLECTIONS_API buffer* buffer_create             (const u32 buffer_size);
-    SLD_COLLECTIONS_API buffer* buffer_memory_init        (vptr mem_ptr, const u32 mem_size);
-    SLD_COLLECTIONS_API void    buffer_destroy            (buffer* b);
-
-    // constant methods
-    SLD_COLLECTIONS_API bool    buffer_is_valid           (const buffer* b);
-    SLD_COLLECTIONS_API bool    buffer_assert_valid       (const buffer* b);
-    SLD_COLLECTIONS_API u32     buffer_memory_size        (const u32 buffer_size);
-    SLD_COLLECTIONS_API u32     buffer_size_remaining     (const buffer* b);
-    SLD_COLLECTIONS_API u32     buffer_append_from_a_to_b (const buffer* ba, const u32   ba_offset,  buffer*       bb);
-    SLD_COLLECTIONS_API u32     buffer_copy_to_dst        (const buffer* b,  const u32   b_offset,   const byte*   dst_memory, const u32 dst_size);
-    SLD_COLLECTIONS_API u32     buffer_copy_from_a_to_b   (const buffer* ba, const u32   ba_offset,  const buffer* bb,         const u32 bb_offset);
-
-    // mutable methods
-    SLD_COLLECTIONS_API void    buffer_reset              (buffer* b);
-    SLD_COLLECTIONS_API u32     buffer_append_from_src    (buffer* b, const byte* src_memory, const u32   src_size);
-    SLD_COLLECTIONS_API u32     buffer_copy_from_src      (buffer* b, const u32   b_offset,   const byte* src_memory, const u32 src_size);
+    SLD_COLLECTIONS_API u32          data_buffer_memory_size        (const u32 buffer_size);
+    SLD_COLLECTIONS_API data_buffer* data_buffer_create             (const u32 buffer_size);
+    SLD_COLLECTIONS_API data_buffer* data_buffer_memory_init        (const u32 buffer_size, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void         data_buffer_destroy            (data_buffer* b);
+    SLD_COLLECTIONS_API bool         data_buffer_is_valid           (const data_buffer* b);
+    SLD_COLLECTIONS_API bool         data_buffer_assert_valid       (const data_buffer* b);
+    SLD_COLLECTIONS_API u32          data_buffer_size_remaining     (const data_buffer* b);
+    SLD_COLLECTIONS_API u32          data_buffer_append_from_a_to_b (const data_buffer* ba, const u32   ba_offset,  buffer*       bb);
+    SLD_COLLECTIONS_API u32          data_buffer_copy_to_dst        (const data_buffer* b,  const u32   b_offset,   const byte*   dst_memory, const u32 dst_size);
+    SLD_COLLECTIONS_API u32          data_buffer_copy_from_a_to_b   (const data_buffer* ba, const u32   ba_offset,  const buffer* bb,         const u32 bb_offset);
+    SLD_COLLECTIONS_API void         data_buffer_reset              (data_buffer* b);
+    SLD_COLLECTIONS_API u32          data_buffer_append_from_src    (data_buffer* b, const byte* src_memory, const u32   src_size);
+    SLD_COLLECTIONS_API u32          data_buffer_copy_from_src      (data_buffer* b, const u32   b_offset,   const byte* src_memory, const u32 src_size);
 
     //-------------------------------------------------------------------
     // STACK BUFFER
     //-------------------------------------------------------------------
 
-    struct stack_buffer {
-        byte* data;
-        u32   size;
-        u32   ptr;        
-    };
-
-    // create/destroy methods
-    SLD_COLLECTIONS_API stack_buffer* stack_buffer_create         (const u32 size);
-    SLD_COLLECTIONS_API stack_buffer* stack_buffer_memory_init    (vptr mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API u32           stack_buffer_memory_size    (const u32 stack_size);
+    SLD_COLLECTIONS_API stack_buffer* stack_buffer_create         (const u32 stack_size);
+    SLD_COLLECTIONS_API stack_buffer* stack_buffer_memory_init    (const u32 stack_size, void* mem_ptr, const u32 mem_size);
     SLD_COLLECTIONS_API void          stack_buffer_destroy        (stack_buffer* sb);    
-
-    // constant methods
-    SLD_COLLECTIONS_API u32           stack_buffer_memory_size    (const u32 size);
     SLD_COLLECTIONS_API bool          stack_buffer_is_valid       (const stack_buffer* sb);
     SLD_COLLECTIONS_API void          stack_buffer_assert_valid   (const stack_buffer* sb);
-    SLD_COLLECTIONS_API u32           stack_buffer_size_remaining (const stack_buffer* sb);
+    SLD_COLLECTIONS_API byte*         stack_buffer_data           (const stack_buffer* sb);
+    SLD_COLLECTIONS_API u32           stack_buffer_size_total     (const stack_buffer* sb);
+    SLD_COLLECTIONS_API u32           stack_buffer_size_free      (const stack_buffer* sb);
+    SLD_COLLECTIONS_API u32           stack_buffer_size_used      (const stack_buffer* sb);
     SLD_COLLECTIONS_API const byte*   stack_buffer_head           (const stack_buffer* sb);
     SLD_COLLECTIONS_API const byte*   stack_buffer_tail           (const stack_buffer* sb);
     SLD_COLLECTIONS_API const byte*   stack_buffer_peek           (const stack_buffer* sb, const u32 size);
-
-    // mutable methods
     SLD_COLLECTIONS_API void          stack_buffer_reset          (stack_buffer* sb);
     SLD_COLLECTIONS_API u32           stack_buffer_push_data      (stack_buffer* sb, const u32 size, const byte* data);
     SLD_COLLECTIONS_API byte*         stack_buffer_pull_data      (stack_buffer* sb, const u32 size);
@@ -187,586 +150,340 @@ namespace sld {
     // QUEUE BUFFER
     //-------------------------------------------------------------------
 
-    struct queue_buffer {
-        byte* data;
-        u32   size;
-        u32   head;
-        u32   tail;
-    };
-
-        // static methods
-        static stack*              create       (const u32 capacity);
-        static u32                 memory_size  (const u32 capacity);
-        static void                init         (const u32 size, void* memory);
-        static void                destroy      (queue_buffer* qb);
-        
-        // constant methods
-        bool                       validate      (void)             const;
-        void                       assert_valid  (void)             const;
-        u32                        size_used     (void)             const;
-        u32                        size_free     (void)             const;
-        void                       to_buffer     (data_buffer*   to) const;
-        void                       to_buffer     (data_buffer&   to) const;
-        template<typename t> void  to_array_list (array_list<t>* to) const;
-        template<typename t> void  to_array_list (array_list<t>& to) const;
-
-        // mutable methods
-        void        reset        (void);
-        const byte* peek         (void);
-        byte*       dequeue      (const u32 size);
-        u32         enqueue      (const u32 size, const byte* data,);
-    };
+    SLD_COLLECTIONS_API u32           queue_memory_size           (const u32 queue_size);
+    SLD_COLLECTIONS_API queue_buffer* queue_buffer_create         (const u32 queue_size);
+    SLD_COLLECTIONS_API queue_buffer* queue_buffer_memory_init    (const u32 queue_size, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void          queue_buffer_destroy        (queue_buffer* qb);    
+    SLD_COLLECTIONS_API bool          queue_buffer_is_valid       (const queue_buffer* qb);
+    SLD_COLLECTIONS_API void          queue_buffer_assert_valid   (const queue_buffer* qb);
+    SLD_COLLECTIONS_API byte*         queue_buffer_data           (const queue_buffer* qb);
+    SLD_COLLECTIONS_API u32           queue_buffer_size_total     (const queue_buffer* qb);
+    SLD_COLLECTIONS_API u32           queue_buffer_size_free      (const queue_buffer* qb);
+    SLD_COLLECTIONS_API u32           queue_buffer_size_used      (const queue_buffer* qb);
+    SLD_COLLECTIONS_API const byte*   queue_buffer_head           (const queue_buffer* qb, const stack_buffer* sb);
+    SLD_COLLECTIONS_API const byte*   queue_buffer_tail           (const queue_buffer* qb, const stack_buffer* sb);
+    SLD_COLLECTIONS_API const byte*   queue_buffer_peek           (const queue_buffer* qb, const stack_buffer* sb, const u32 size);
+    SLD_COLLECTIONS_API void          queue_buffer_reset          (queue_buffer* qb);
+    SLD_COLLECTIONS_API const byte*   queue_buffer_peek           (queue_buffer* qb);
+    SLD_COLLECTIONS_API u32           queue_buffer_push_data      (queue_buffer* qb, const u32 size, const byte* data);
+    SLD_COLLECTIONS_API byte*         queue_buffer_pop_data       (queue_buffer* qb, const u32 size);
 
     //-------------------------------------------------------------------
     // ARRAY LIST
     //-------------------------------------------------------------------
 
-    template<typename type>
-    class array_list {
-        
-    private:
-    
-        // properties
-        type* _elements;
-        u32   _capacity;
-        u32   _count;
-        b64   _internal;
-
-    public:
-
-        // static methods
-        static u32 memory_size (const u32 capacity);
-
-        // constructors
-        array_list (const u32 capacity);
-        array_list (const u32 capacity, type* elements);
-        array_list (const u32 mem_size, vptr  mem_ptr);
-
-        // destructors
-        ~array_list();
-
-        // constant methods
-        u32 size_total        (void)                                                           const;
-        u32 size_free         (void)                                                           const;
-        u32 size_used         (void)                                                           const;
-        u32 index_of          (const t* element)                                               const;
-        u32 to_buffer         (buffer*           to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_buffer         (buffer&           to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_array_list (array_list<type>* to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_array_list (array_list<type>& to, const u32 index = 0, const u32 count = 0) const;
-
-        // mutable methods
-        void reset            (void);
-        void reverse          (void);
-        u32  remove           (const type* element);
-        u32  remove_at        (const u32   index,    const u32 index = 0);
-        u32  push_back        (const type* elements, const u32 count = 1);
-        u32  push_front       (const type* elements, const u32 count = 1);
-        void insert_at        (const type* elements, const u32 index, const u32 count = 1);
-
-        // inline methods
-        inline const u32 capacity (void) { return(this->_capacity); }
-        inline const u32 count    (void) { return(this->_count);    }
-        inline const u32 internal (void) { return(this->_internal); }        
-        
-        // operators
-        type*       operator[] (u32 index);
-        type&       operator[] (u32 index);
-        const type* operator[] (u32 index) const;
-        const type& operator[] (u32 index) const;
-
-
-    };
+    SLD_COLLECTIONS_API u32         array_list_memory_size           (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API array_list* array_list_create                (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API array_list* array_list_memory_init           (const u32 stride, const u32 capacity, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void        array_list_destroy               (array_list* al);    
+    SLD_COLLECTIONS_API bool        array_list_is_valid              (const array_list* al);
+    SLD_COLLECTIONS_API bool        array_list_assert_valid          (const array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_validate              (const array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_size_total            (const array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_size_free             (const array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_size_used             (const array_list* al);
+    SLD_COLLECTIONS_API element*    array_list_elements             ( const array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_stride                (const array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_capacity              (const array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_count                 (const array_list* al);
+    SLD_COLLECTIONS_API element*    array_list_index                 (const array_list* al, const u32     index);
+    SLD_COLLECTIONS_API u32         array_list_index_of              (const array_list* al, const element elmnt);
+    SLD_COLLECTIONS_API void        array_list_reset                 (array_list* al);
+    SLD_COLLECTIONS_API void        array_list_reverse               (array_list* al);
+    SLD_COLLECTIONS_API u32         array_list_remove_element        (array_list* al, const element* elmnt);
+    SLD_COLLECTIONS_API u32         array_list_remove_at             (array_list* al, const u32      index);
+    SLD_COLLECTIONS_API u32         array_list_insert_back           (array_list* al, const element* push,   const u32      count = 1);
+    SLD_COLLECTIONS_API u32         array_list_insert_front          (array_list* al, const element* push,   const u32      count = 1);
+    SLD_COLLECTIONS_API void        array_list_insert_before_index   (array_list* al, const element* insert, const u32      before_index, const u32 count = 1);
+    SLD_COLLECTIONS_API void        array_list_insert_before_element (array_list* al, const element* insert, const element* before_elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API void        array_list_insert_after_index    (array_list* al, const element* insert, const u32      after_index,  const u32 count = 1);
+    SLD_COLLECTIONS_API void        array_list_insert_after_element  (array_list* al, const element* insert, const element* after_elmnt,  const u32 count = 1);
 
     //-------------------------------------------------------------------
     // STACK LIST
     //-------------------------------------------------------------------
 
-    template<typename type>
-    class stack_list {
-
-    private:
-        
-        // properties
-        type* _elements;
-        u32   _capacity;
-        u32   _count;
-        b64   _internal;
-
-    public:
-
-        // static methods
-        static u32 memory_size (const u32 capacity);
-
-        // constructors
-        stack_list (const u32 capacity);        
-        stack_list (const u32 capacity, type* elements);        
-        stack_list (const u32 mem_size, vptr  mem_ptr);        
-
-        // destructors
-        ~stack_list();
-
-        // constant methods        
-        bool          is_valid       (void)                const;
-        void          assert_valid   (void)                const;
-        const type*   peek           (const u32 count)     const;
-        const type&   peek           (const u32 count)     const;
-        const type*   head           (void)                const;
-        const type&   head           (void)                const;
-        const type*   tail           (void)                const;
-        const type&   tail           (void)                const;
-        u32           size_total     (void)                const;
-        u32           size_used      (void)                const;
-        u32           size_free      (void)                const;
-        void          to_data_buffer (data_buffer* buffer) const;
-        void          to_data_buffer (data_buffer& buffer) const;
-
-        // mutable methods
-        void          reset        (void);
-        type*         pull         (const u32 count);
-        bool          pull         (type& element);
-        u32           push         (const u32 count, const type* elements);
-        bool          push         (const type& element);
-
-        // inline methods
-        inline u32 capacity (void) { return(this->capacity); }
-        inline u32 count    (void) { return(this->count);    }
-    };
+    SLD_COLLECTIONS_API u32            stack_list_memory_size  (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API stack_list*    stack_list_create       (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API stack_list*    stack_list_memory_init  (const u32 stride, const u32 capacity, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void           stack_list_destroy      (stack_list* sl);    
+    SLD_COLLECTIONS_API bool           stack_list_is_valid     (const stack_list* sl);
+    SLD_COLLECTIONS_API void           stack_list_assert_valid (const stack_list* sl);
+    SLD_COLLECTIONS_API const element* stack_list_elements     (const stack_list* sl);
+    SLD_COLLECTIONS_API const u32      stack_list_stride       (const stack_list* sl);
+    SLD_COLLECTIONS_API const u32      stack_list_capacity     (const stack_list* sl);
+    SLD_COLLECTIONS_API const u32      stack_list_count        (const stack_list* sl);
+    SLD_COLLECTIONS_API u32            stack_list_size_total   (const stack_list* sl);
+    SLD_COLLECTIONS_API u32            stack_list_size_used    (const stack_list* sl);
+    SLD_COLLECTIONS_API u32            stack_list_size_free    (const stack_list* sl);
+    SLD_COLLECTIONS_API const element* stack_list_head_element (const stack_list* sl);
+    SLD_COLLECTIONS_API const element* stack_list_tail_element (const stack_list* sl);
+    SLD_COLLECTIONS_API const element* stack_list_peek_element (const stack_list* sl, const u32 count);
+    SLD_COLLECTIONS_API void           stack_list_reset        (stack_list* sl);
+    SLD_COLLECTIONS_API u32            stack_list_push_element (stack_list* sl, const element* elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API element*       stack_list_pull_element (stack_list* sl, const u32 count = 1);
 
     //-------------------------------------------------------------------
     // QUEUE LIST
     //-------------------------------------------------------------------
 
-    template<typename type>
-    struct queue_list {
-
-        // properties
-        type* elements;
-        u32   capacity;
-        u32   head;
-        u32   tail;
-
-        // static methods
-        static queue_list<type>* create           (const u32 capacity);
-        static u32               memory_size      (const u32 capacity);
-        static void              init             (const u32 size, void* memory);
-        static void              destroy          (queue_list<type>* ql);
-        
-        // constant methods
-        bool                       validate     (void)                     const;
-        void                       assert_valid (void)                     const;
-        u32                        size_used    (void)                     const;
-        u32                        size_free    (void)                     const;
-        const t*                   peek         (const u32 size)           const;
-        void                       to_buffer     (buffer* buffer)          const;
-        void                       to_buffer     (buffer& buffer)          const;
-        template<typename t> void  to_array_list (array_list<type>* array) const;
-        template<typename t> void  to_array_list (array_list<type>& array) const;
-
-        // mutable methods
-        void        reset   (void);
-        const byte* peek    (void);
-        type*       dequeue (const u32 count);
-        u32         enqueue (const type* elements, const u32 count = 1);
-    };
-
-    //-------------------------------------------------------------------
-    // SINGLE LINKED LIST
-    //-------------------------------------------------------------------
-
-    template<typename type>
-    struct single_linked_node {
-        single_linked_node<type>* next;
-        type                      element;        
-    };
-
-    template<typename type>
-    struct single_linked_list {
-
-        using node = single_linked_node<type>;
-
-        node* first;        
-        node* last;
-    };
-
-    //-------------------------------------------------------------------
-    // DOUBLE LINKED LIST
-    //-------------------------------------------------------------------
-
-    template<typename type>
-    class double_linked_list {
-
-    public:
-        struct node : type {
-            double_linked_list<type>* list;
-            node*                     next;
-            node*                     prev;
-        };
-        
-    private:
-
-        // properties
-        node* _first;        
-        node* _last;
-
-    public:
-
-        static u32 list_size();    
-        static u32 node_size();    
-
-        double_linked_list();
-        ~double_linked_list();
-
-        node* first ();
-        node* last  ();
-
-        node* create_node (const u32 count = 1);
-        bool  delete_node (node* n, const u32 count = 1);
-
-        insert_first  (node* n);
-        insert_last   (node* n);
-        insert_before (node* n);
-    };
+    SLD_COLLECTIONS_API u32          queue_list_memory_size  (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API queue_list*  queue_list_create       (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API queue_list*  queue_list_memory_init  (const u32 stride, const u32 capacity, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void         queue_list_destroy      (queue_list* ql);    
+    SLD_COLLECTIONS_API bool         queue_list_is_valid     (const queue_list* ql);
+    SLD_COLLECTIONS_API void         queue_list_assert_valid (const queue_list* ql);
+    SLD_COLLECTIONS_API const void*  queue_list_elements     (const queue_list* ql);
+    SLD_COLLECTIONS_API const u32    queue_list_stride       (const queue_list* ql);
+    SLD_COLLECTIONS_API const u32    queue_list_capacity     (const queue_list* ql);
+    SLD_COLLECTIONS_API const u32    queue_list_count        (const queue_list* ql);
+    SLD_COLLECTIONS_API u32          queue_list_size_total   (const queue_list* ql);
+    SLD_COLLECTIONS_API u32          queue_list_size_used    (const queue_list* ql);
+    SLD_COLLECTIONS_API u32          queue_list_size_free    (const queue_list* ql);
+    SLD_COLLECTIONS_API const void*  queue_list_head_element (const queue_list* ql);
+    SLD_COLLECTIONS_API const void*  queue_list_tail_element (const queue_list* ql);
+    SLD_COLLECTIONS_API const void*  queue_list_peek_element (const queue_list* ql, const u32 count);
+    SLD_COLLECTIONS_API void         queue_list_reset        (queue_list* ql);
+    SLD_COLLECTIONS_API u32          queue_list_push_element (queue_list* ql, element elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API void*        queue_list_pop_element  (queue_list* ql, const u32 count = 1);
 
     //-------------------------------------------------------------------
     // MAP 32
     //-------------------------------------------------------------------
 
-    template<typename key, typename value>
-    struct map_32 {
-
-        // properties
-        key*   keys;
-        value* values;
-        u32*   hashes;
-        u32    capacity;
-        u32    count;
-
-        // static methods
-        static stack* create       (const u32 capacity);
-        static u32    memory_size  (const u32 capacity);
-        static void   init         (const u32 size, void* memory);
-        static void   destroy      (map<key,value>* m);
-
-        // constant methods
-        bool          validate     (void)                              const;
-        void          assert_valid (void)                              const;
-        u32           size_used    (void)                              const;
-        u32           size_free    (void)                              const;
-        bool          exists       (const k& key)                      const;
-        bool          exists       (const k* key, const u32 count = 1) const;
-
-        // mutable methods
-        void          reset        (void);
-        bool          remove       (const key& k);
-        u32           remove       (const key* k, const u32 count = 1);
-        bool          insert       (const key& k, const value v&); 
-        u32           insert       (const key* k, const value v*, const u32 count = 1); 
-
-        // operators
-        value*        operator[]   (const key* k);
-        value&        operator[]   (const key* k);
-        value*        operator[]   (const key& k);
-        value&        operator[]   (const key& k);
-        const value*  operator[]   (const key* k) const;
-        const value&  operator[]   (const key* k) const;
-        const value*  operator[]   (const key& k) const;
-        const value&  operator[]   (const key& k) const;
-    };
+    SLD_COLLECTIONS_API u32          map_32_list_memory_size  (const u32 key_size, const u32 val_size, const u32 capacity);
+    SLD_COLLECTIONS_API map_32*      map_32_list_create       (const u32 key_size, const u32 val_size, const u32 capacity);
+    SLD_COLLECTIONS_API map_32*      map_32_list_memory_init  (const u32 key_size, const u32 val_size, const u32 capacity, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void         map_32_list_destroy      (map_32* m);    
+    SLD_COLLECTIONS_API bool         map_32_list_is_valid     (const map_32* m);
+    SLD_COLLECTIONS_API void         map_32_list_assert_valid (const map_32* m);
+    SLD_COLLECTIONS_API const value* map_32_values            (const map_32* m);
+    SLD_COLLECTIONS_API const key*   map_32_keys              (const map_32* m);
+    SLD_COLLECTIONS_API const h32    map_32_hashes            (const map_32* m);
+    SLD_COLLECTIONS_API u32          map_32_capacity          (const map_32* m);
+    SLD_COLLECTIONS_API u32          map_32_count             (const map_32* m);
+    SLD_COLLECTIONS_API u32          map_32_size_total        (const map_32* m);
+    SLD_COLLECTIONS_API u32          map_32_size_used         (const map_32* m);
+    SLD_COLLECTIONS_API u32          map_32_size_free         (const map_32* m);
+    SLD_COLLECTIONS_API bool         map_32_does_key_exist    (const map_32* m, const key    k);
+    SLD_COLLECTIONS_API bool         map_32_does_value_exist  (const map_32* m, const value* v);
+    SLD_COLLECTIONS_API bool         map_32_lookup            (const map_32* m, const key*   k, value* v);
+    SLD_COLLECTIONS_API void         map_32_reset             (map_32* m);
+    SLD_COLLECTIONS_API u32          map_32_remove            (map_32* m, const key* k, const value* v, const u32 count = 1);
+    SLD_COLLECTIONS_API u32          map_32_insert            (map_32* m, const key* k, const value* v, const u32 count = 1, h32* h = NULL); 
+    SLD_COLLECTIONS_API u32          map_32_update            (map_32* m, const key* k, const value* v, const u32 count = 1); 
 
     //-------------------------------------------------------------------
     // MAP 64
     //-------------------------------------------------------------------
 
-    template<typename key, typename value>
-    struct map_64 {
-
-        // properties
-        key*   keys;
-        value* values;
-        u64*   hashes;
-        u32    capacity;
-        u32    count;
-
-        // static methods
-        static stack* create       (const u32 capacity);
-        static u32    memory_size  (const u32 capacity);
-        static void   init         (const u32 size, void* memory);
-        static void   destroy      (map<key,value>* m);
-
-        // constant methods
-        bool          validate     (void)                              const;
-        void          assert_valid (void)                              const;
-        u32           size_used    (void)                              const;
-        u32           size_free    (void)                              const;
-        bool          exists       (const k& key)                      const;
-        bool          exists       (const k* key, const u32 count = 1) const;
-
-        // mutable methods
-        void          reset        (void);
-        bool          remove       (const key& k);
-        u32           remove       (const key* k, const u32 count = 1);
-        bool          insert       (const key& k, const value v&); 
-        u32           insert       (const key* k, const value v*, const u32 count = 1); 
-
-        // operators
-        value*        operator[]   (const key* k);
-        value&        operator[]   (const key* k);
-        value*        operator[]   (const key& k);
-        value&        operator[]   (const key& k);
-        const value*  operator[]   (const key* k) const;
-        const value&  operator[]   (const key* k) const;
-        const value*  operator[]   (const key& k) const;
-        const value&  operator[]   (const key& k) const;
-    };
+    SLD_COLLECTIONS_API u64          map_64_list_memory_size  (const u32 key_size, const u32 val_size, const u32 capacity);
+    SLD_COLLECTIONS_API map_64*      map_64_list_create       (const u32 key_size, const u32 val_size, const u32 capacity);
+    SLD_COLLECTIONS_API map_64*      map_64_list_memory_init  (const u32 key_size, const u32 val_size, const u32 capacity, void* mem_ptr, const u64 mem_size);
+    SLD_COLLECTIONS_API void         map_64_list_destroy      (map_64* m);    
+    SLD_COLLECTIONS_API bool         map_64_list_is_valid     (const map_64* m);
+    SLD_COLLECTIONS_API void         map_64_list_assert_valid (const map_64* m);
+    SLD_COLLECTIONS_API const value* map_64_values            (const map_64* m);
+    SLD_COLLECTIONS_API const key*   map_64_keys              (const map_64* m);
+    SLD_COLLECTIONS_API const h64    map_64_hashes            (const map_64* m);
+    SLD_COLLECTIONS_API u32          map_64_capacity          (const map_64* m);
+    SLD_COLLECTIONS_API u32          map_64_count             (const map_64* m);
+    SLD_COLLECTIONS_API u32          map_64_size_total        (const map_64* m);
+    SLD_COLLECTIONS_API u32          map_64_size_used         (const map_64* m);
+    SLD_COLLECTIONS_API u32          map_64_size_free         (const map_64* m);
+    SLD_COLLECTIONS_API bool         map_64_does_key_exist    (const map_64* m, const key    k);
+    SLD_COLLECTIONS_API bool         map_64_does_value_exist  (const map_64* m, const value* v);
+    SLD_COLLECTIONS_API bool         map_64_lookup            (const map_64* m, const key*   k, value* v);
+    SLD_COLLECTIONS_API void         map_64_reset             (map_64* m);
+    SLD_COLLECTIONS_API u32          map_64_remove            (map_64* m, const key* k, const value* v, const u64 count = 1);
+    SLD_COLLECTIONS_API u32          map_64_insert            (map_64* m, const key* k, const value* v, const u64 count = 1, h64* h = NULL); 
+    SLD_COLLECTIONS_API u32          map_64_update            (map_64* m, const key* k, const value* v, const u64 count = 1); 
 
     //-------------------------------------------------------------------
     // MAP 128
     //-------------------------------------------------------------------
 
-    template<typename key, typename value>
-    struct map_128 {
-
-        // properties
-        key*   keys;
-        value* values;
-        u128*  hashes;
-        u32    capacity;
-        u32    count;
-
-        // static methods
-        static stack* create       (const u32 capacity);
-        static u32    memory_size  (const u32 capacity);
-        static void   init         (const u32 size, void* memory);
-        static void   destroy      (map<key,value>* m);
-
-        // constant methods
-        bool          validate     (void)                              const;
-        void          assert_valid (void)                              const;
-        u32           size_used    (void)                              const;
-        u32           size_free    (void)                              const;
-        bool          exists       (const k& key)                      const;
-        bool          exists       (const k* key, const u32 count = 1) const;
-
-        // mutable methods
-        void          reset        (void);
-        bool          remove       (const key& k);
-        u32           remove       (const key* k, const u32 count = 1);
-        bool          insert       (const key& k, const value v&); 
-        u32           insert       (const key* k, const value v*, const u32 count = 1); 
-
-        // operators
-        value*        operator[]   (const key* k);
-        value&        operator[]   (const key* k);
-        value*        operator[]   (const key& k);
-        value&        operator[]   (const key& k);
-        const value*  operator[]   (const key* k) const;
-        const value&  operator[]   (const key* k) const;
-        const value*  operator[]   (const key& k) const;
-        const value&  operator[]   (const key& k) const;
-    };
+    SLD_COLLECTIONS_API u128          map_128_list_memory_size  (const u128 key_size, const u32 val_size, const u32 capacity);
+    SLD_COLLECTIONS_API map_128*      map_128_list_create       (const u128 key_size, const u32 val_size, const u32 capacity);
+    SLD_COLLECTIONS_API map_128*      map_128_list_memory_init  (const u128 key_size, const u32 val_size, const u32 capacity, void* mem_ptr, const u128 mem_size);
+    SLD_COLLECTIONS_API void          map_128_list_destroy      (map_128* m);    
+    SLD_COLLECTIONS_API bool          map_128_list_is_valid     (const map_128* m);
+    SLD_COLLECTIONS_API void          map_128_list_assert_valid (const map_128* m);
+    SLD_COLLECTIONS_API const value*  map_128_values            (const map_128* m);
+    SLD_COLLECTIONS_API const key*    map_128_keys              (const map_128* m);
+    SLD_COLLECTIONS_API const hash128 map_128_hashes            (const map_128* m);
+    SLD_COLLECTIONS_API u32           map_128_capacity          (const map_128* m);
+    SLD_COLLECTIONS_API u32           map_128_count             (const map_128* m);
+    SLD_COLLECTIONS_API u32           map_128_size_total        (const map_128* m);
+    SLD_COLLECTIONS_API u32           map_128_size_used         (const map_128* m);
+    SLD_COLLECTIONS_API u32           map_128_size_free         (const map_128* m);
+    SLD_COLLECTIONS_API bool          map_128_does_key_exist    (const map_128* m, const key    k);
+    SLD_COLLECTIONS_API bool          map_128_does_value_exist  (const map_128* m, const value* v);
+    SLD_COLLECTIONS_API bool          map_128_lookup            (const map_128* m, const key*   k, value* v);
+    SLD_COLLECTIONS_API void          map_128_reset             (map_128* m);
+    SLD_COLLECTIONS_API u32           map_128_remove            (map_128* m, const key* k, const value* v, const u128 count = 1);
+    SLD_COLLECTIONS_API u32           map_128_insert            (map_128* m, const key* k, const value* v, const u128 count = 1, h128* h = NULL); 
+    SLD_COLLECTIONS_API u32           map_128_update            (map_128* m, const key* k, const value* v, const u128 count = 1); 
 
     //-------------------------------------------------------------------
     // SET 32
     //-------------------------------------------------------------------
 
-    template<typename t>
-    struct set_32 {
-        
-        // properties
-        t*   elements;
-        u32* hashes
-        u32  capacity;
-        u32  count;
-
-        // static methods
-        static array_list<t>* create      (const u32 capacity);
-        static u32            memory_size (const u32 capacity);
-        static void           init        (const u32 capacity, vptr data);
-        static void           destroy     (array_list<t>* al);
-        static u32            hash_of     (const t* element);
-
-        // constant methods
-        u32 size_total        (void)                                                        const;
-        u32 size_free         (void)                                                        const;
-        u32 size_used         (void)                                                        const;
-        u32 index_of          (const t* element)                                            const;
-        u32 to_buffer         (buffer*        to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_buffer         (buffer&        to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_array          (array<t>*      to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_array          (array<t>&      to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_array_list (array_list<t>* to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_array_list (array_list<t>& to, const u32 index = 0, const u32 count = 0) const;
-
-        // mutable methods
-        void reset      (void);
-        void reverse    (void);
-        u32  remove     (const t* element);
-        u32  remove_at  (const u32 index, const u32 count = 0);
-        u32  push_back  (const t* elements, const u32 count = 1);
-        u32  push_front (const t* elements, const u32 count = 1);
-        void insert_at  (const t* elements, const u32 index, const u32 count = 1);
-
-        // operators
-        t*       operator[] (u32 index);
-        t&       operator[] (u32 index);
-        const t* operator[] (u32 index) const;
-        const t& operator[] (u32 index) const;
-    };
+    SLD_COLLECTIONS_API u32     set_32_memory_size           (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API set_32* set_32_create                (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API set_32* set_32_memory_init           (const u32 stride, const u32 capacity, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void    set_32_destroy               (set_32* s);    
+    SLD_COLLECTIONS_API bool    set_32_is_valid              (const set_32* s);
+    SLD_COLLECTIONS_API bool    set_32_assert_valid          (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_validate              (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_size_total            (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_size_free             (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_size_used             (const set_32* s);
+    SLD_COLLECTIONS_API void*   set_32_elements              (const set_32* s);
+    SLD_COLLECTIONS_API h32*    set_32_hashes                (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_stride                (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_capacity              (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_count                 (const set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_index                 (const set_32* s, const u32  index);
+    SLD_COLLECTIONS_API u32     set_32_index_of              (const set_32* s, const element elmnt);
+    SLD_COLLECTIONS_API void    set_32_reset                 (set_32* s);
+    SLD_COLLECTIONS_API void    set_32_reverse               (set_32* s);
+    SLD_COLLECTIONS_API u32     set_32_remove_element        (set_32* s, const element elmnt);
+    SLD_COLLECTIONS_API u32     set_32_remove_at             (set_32* s, const u32  index);
+    SLD_COLLECTIONS_API u32     set_32_insert_back           (set_32* s, const element* push,   const u32      count = 1);
+    SLD_COLLECTIONS_API u32     set_32_insert_front          (set_32* s, const element* push,   const u32      count = 1);
+    SLD_COLLECTIONS_API void    set_32_insert_before_index   (set_32* s, const element* insert, const u32      before_index, const u32 count = 1);
+    SLD_COLLECTIONS_API void    set_32_insert_before_element (set_32* s, const element* insert, const element* before_elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API void    set_32_insert_after_index    (set_32* s, const element* insert, const u32      after_index,  const u32 count = 1);
+    SLD_COLLECTIONS_API void    set_32_insert_after_element  (set_32* s, const element* insert, const element* after_elmnt,  const u32 count = 1);
 
     //-------------------------------------------------------------------
     // SET 64
     //-------------------------------------------------------------------
 
-    template<typename t>
-    struct set_64 {
-        
-        // properties
-        t*   elements;
-        u64* hashes
-        u32  capacity;
-        u32  count;
-
-        // static methods
-        static array_list<t>* create      (const u32 capacity);
-        static u32            memory_size (const u32 capacity);
-        static void           init        (const u32 capacity, vptr data);
-        static void           destroy     (array_list<t>* al);
-        static u32            hash_of     (const t* element);
-
-        // constant methods
-        u32 size_total        (void)                                                        const;
-        u32 size_free         (void)                                                        const;
-        u32 size_used         (void)                                                        const;
-        u32 index_of          (const t* element)                                            const;
-        u32 to_buffer         (buffer*        to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_buffer         (buffer&        to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_array          (array<t>*      to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_array          (array<t>&      to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_array_list (array_list<t>* to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_array_list (array_list<t>& to, const u32 index = 0, const u32 count = 0) const;
-
-        // mutable methods
-        void reset      (void);
-        void reverse    (void);
-        u32  remove     (const t* element);
-        u32  remove_at  (const u32 index, const u32 count = 0);
-        u32  push_back  (const t* elements, const u32 count = 1);
-        u32  push_front (const t* elements, const u32 count = 1);
-        void insert_at  (const t* elements, const u32 index, const u32 count = 1);
-
-        // operators
-        t*       operator[] (u32 index);
-        t&       operator[] (u32 index);
-        const t* operator[] (u32 index) const;
-        const t& operator[] (u32 index) const;
-    };
+    SLD_COLLECTIONS_API u64     set_64_memory_size           (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API set_64* set_64_create                (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API set_64* set_64_memory_init           (const u32 stride, const u32 capacity, void* mem_ptr, const u64 mem_size);
+    SLD_COLLECTIONS_API void    set_64_destroy               (set_64* s);    
+    SLD_COLLECTIONS_API bool    set_64_is_valid              (const set_64* s);
+    SLD_COLLECTIONS_API bool    set_64_assert_valid          (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_validate              (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_size_total            (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_size_free             (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_size_used             (const set_64* s);
+    SLD_COLLECTIONS_API void*   set_64_elements              (const set_64* s);
+    SLD_COLLECTIONS_API h64*    set_64_hashes                (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_stride                (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_capacity              (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_count                 (const set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_index                 (const set_64* s, const u64  index);
+    SLD_COLLECTIONS_API u32     set_64_index_of              (const set_64* s, const element elmnt);
+    SLD_COLLECTIONS_API void    set_64_reset                 (set_64* s);
+    SLD_COLLECTIONS_API void    set_64_reverse               (set_64* s);
+    SLD_COLLECTIONS_API u32     set_64_remove_element        (set_64* s, const element elmnt);
+    SLD_COLLECTIONS_API u32     set_64_remove_at             (set_64* s, const u64  index);
+    SLD_COLLECTIONS_API u32     set_64_insert_back           (set_64* s, const void* push,   const u32   count = 1);
+    SLD_COLLECTIONS_API u32     set_64_insert_front          (set_64* s, const void* push,   const u32   count = 1);
+    SLD_COLLECTIONS_API void    set_64_insert_before_index   (set_64* s, const void* insert, const u32   before_index, const u32 count = 1);
+    SLD_COLLECTIONS_API void    set_64_insert_before_element (set_64* s, const void* insert, const void* before_elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API void    set_64_insert_after_index    (set_64* s, const void* insert, const u32   after_index,  const u32 count = 1);
+    SLD_COLLECTIONS_API void    set_64_insert_after_element  (set_64* s, const void* insert, const void* after_elmnt,  const u32 count = 1);
 
     //-------------------------------------------------------------------
     // SET 128
     //-------------------------------------------------------------------
 
-    template<typename type>
+    using set_128_hash = u128;
+
     struct set_128 {
-        
-        // properties
-        type* elements;
-        u128* hashes
-        u32   capacity;
-        u32   count;
-
-        // static methods
-        static array_list<type>* create      (const u32 capacity);
-        static u32               memory_size (const u32 capacity);
-        static void              init        (const u32 capacity, vptr data);
-        static void              destroy     (set_128<type>* al);
-        static u32               hash_of     (const t* element);
-
-        // constant methods
-        u32 size_total        (void)                                                        const;
-        u32 size_free         (void)                                                        const;
-        u32 size_used         (void)                                                        const;
-        u32 index_of          (const t* element)                                            const;
-        u32 to_buffer         (buffer*        to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_buffer         (buffer&        to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_set        (set_128<type>* to, const u32 index = 0, const u32 count = 0) const;
-        u32 to_sub_set        (set_128<type>& to, const u32 index = 0, const u32 count = 0) const;
-
-        // mutable methods
-        void reset      (void);
-        void reverse    (void);
-        u32  remove     (const t* element);
-        u32  remove_at  (const u32 index, const u32 count = 0);
-        u32  push_back  (const t* elements, const u32 count = 1);
-        u32  push_front (const t* elements, const u32 count = 1);
-        void insert_at  (const t* elements, const u32 index, const u32 count = 1);
-
-        // operators
-        t*       operator[] (u32 index);
-        t&       operator[] (u32 index);
-        const t* operator[] (u32 index) const;
-        const t& operator[] (u32 index) const;
+        void*          elements;
+        set_128_hash* hashes;        
+        u128          stride;
+        u128          capacity;
+        u128          count;
     };
 
+    SLD_COLLECTIONS_API u128          set_128_memory_size           (const u128 stride, const u128 capacity);
+    SLD_COLLECTIONS_API set_128*      set_128_create                (const u128 stride, const u128 capacity);
+    SLD_COLLECTIONS_API set_128*      set_128_memory_init           (const u128 stride, const u128 capacity, void* mem_ptr, const u128 mem_size);
+    SLD_COLLECTIONS_API void          set_128_destroy               (set_128* s);    
+    SLD_COLLECTIONS_API bool          set_128_is_valid              (const set_128* s);
+    SLD_COLLECTIONS_API bool          set_128_assert_valid          (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_validate              (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_size_total            (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_size_free             (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_size_used             (const set_128* s);
+    SLD_COLLECTIONS_API void*         set_128_elements              (const set_128* s);
+    SLD_COLLECTIONS_API set_128_hash* set_128_hashes                (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_stride                (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_capacity              (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_count                 (const set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_index                 (const set_128* s, const u128  index);
+    SLD_COLLECTIONS_API u128          set_128_index_of              (const set_128* s, const element elmnt);
+    SLD_COLLECTIONS_API void          set_128_reset                 (set_128* s);
+    SLD_COLLECTIONS_API void          set_128_reverse               (set_128* s);
+    SLD_COLLECTIONS_API u128          set_128_remove_element        (set_128* s, const element elmnt);
+    SLD_COLLECTIONS_API u128          set_128_remove_at             (set_128* s, const u128  index);
+    SLD_COLLECTIONS_API u128          set_128_insert_back           (set_128* s, const void* push,   const u128 count = 1);
+    SLD_COLLECTIONS_API u128          set_128_insert_front          (set_128* s, const void* push,   const u128 count = 1);
+    SLD_COLLECTIONS_API void          set_128_insert_before_index   (set_128* s, const void* insert, const u128  before_index, const u128 count = 1);
+    SLD_COLLECTIONS_API void          set_128_insert_before_element (set_128* s, const void* insert, const void* before_elmnt, const u128 count = 1);
+    SLD_COLLECTIONS_API void          set_128_insert_after_index    (set_128* s, const void* insert, const u128  after_index,  const u128 count = 1);
+    SLD_COLLECTIONS_API void          set_128_insert_after_element  (set_128* s, const void* insert, const void* after_elmnt,  const u128 count = 1);
+
     //-------------------------------------------------------------------
-    // SPARSE ARRAY 32
+    // SPARSE SET 32
+    //-------------------------------------------------------------------
+
+    using sparse_set_32_element = void
+    using sparse_set_32_index   = u32; 
+    using sparse_set_32_hash    = u32;
+
+    struct sparse_set_32 {
+        sparse_set_32_element* array_sparse_elements;
+        sparse_set_32_index*   array_dense_indexes;
+        sparse_set_32_hash*    array_dense_hashes;
+        u32                    size_element;
+        u32                    size_key;
+        u32                    capacity;
+        u32                    count;
+        f32                    percentage_max;
+    };
+
+    SLD_COLLECTIONS_API u32            sparse_set_32_memory_size           (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API sparse_set_32* sparse_set_32_create                (const u32 stride, const u32 capacity);
+    SLD_COLLECTIONS_API sparse_set_32* sparse_set_32_memory_init           (const u32 stride, const u32 capacity, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void           sparse_set_32_destroy               (set_32* s);    
+    SLD_COLLECTIONS_API bool           sparse_set_32_is_valid              (const set_32* s);
+    SLD_COLLECTIONS_API bool           sparse_set_32_assert_valid          (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_validate              (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_size_total            (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_size_free             (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_size_used             (const set_32* s);
+    SLD_COLLECTIONS_API void*          sparse_set_32_elements              (const set_32* s);
+    SLD_COLLECTIONS_API set_32_hash*   sparse_set_32_hashes                (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_stride                (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_capacity              (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_count                 (const set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_index                 (const set_32* s, const u32  index);
+    SLD_COLLECTIONS_API u32            sparse_set_32_index_of              (const set_32* s, const element elmnt);
+    SLD_COLLECTIONS_API void           sparse_set_32_reset                 (set_32* s);
+    SLD_COLLECTIONS_API void           sparse_set_32_reverse               (set_32* s);
+    SLD_COLLECTIONS_API u32            sparse_set_32_remove_element        (set_32* s, const element elmnt);
+    SLD_COLLECTIONS_API u32            sparse_set_32_remove_at             (set_32* s, const u32  index);
+    SLD_COLLECTIONS_API u32            sparse_set_32_insert_back           (set_32* s, const void* push,   const u32 count = 1);
+    SLD_COLLECTIONS_API u32            sparse_set_32_insert_front          (set_32* s, const void* push,   const u32 count = 1);
+    SLD_COLLECTIONS_API void           sparse_set_32_insert_before_index   (set_32* s, const void* insert, const u32  before_index, const u32 count = 1);
+    SLD_COLLECTIONS_API void           sparse_set_32_insert_before_element (set_32* s, const void* insert, const void* before_elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API void           sparse_set_32_insert_after_index    (set_32* s, const void* insert, const u32  after_index,  const u32 count = 1);
+    SLD_COLLECTIONS_API void           sparse_set_32_insert_after_element  (set_32* s, const void* insert, const void* after_elmnt,  const u32 count = 1);
+
+    //-------------------------------------------------------------------
+    // SPARSE SET 64
     //-------------------------------------------------------------------
 
     template<typename key, typename value>
-    struct sparse_array {
-
-        // properties
-        t*   sparse_elements;
-        u32* dense_indexes;
-        u32* dense_hashes;
-        f32  percentage_max;
-        u32  capacity;
-        u32  count;
-
-        // static methods
-        static stack* create       (const u32 capacity, const f32 percentage_max);
-        static u32    memory_size  (const u32 capacity, const f32 percentage_max);
-        static void   init         (const u32 size, const f32 percentage_max, void* memory);
-        static void   destroy      (sparse_array<key,value>* m);
-        static u32    hash_of      (const key& k);   
-        static void   hash_of      (const key& k*, const u32 count, u32* hashes);
-
-        // constant methods
-        bool          validate     (void)                              const;
-        void          assert_valid (void)                              const;
-        u32           size_used    (void)                              const;
-        u32           size_free    (void)                              const;
-        bool          exists       (const key& k)                      const;
-        bool          exists       (const key* k, const u32 count = 1) const;
-        u32           index_of     (const key* k)                      const;
-        u32           index_of     (const key& k)                      const;
-
-        // mutable methods
-        void          reset        (void);
-        bool          remove       (const key& k);
-        u32           remove       (const key* k, const u32 count = 1);
-        bool          insert       (const key& k, const value v&); 
-        u32           insert       (const key* k, const value v*, const u32 count = 1); 
-
-        // operators
-        value*        operator[]   (const key* k);
-        value&        operator[]   (const key* k);
-        value*        operator[]   (const key& k);
-        value&        operator[]   (const key& k);
-        const value*  operator[]   (const key* k)     const;
-        const value&  operator[]   (const key* k)     const;
-        const value*  operator[]   (const key& k)     const;
-        const value&  operator[]   (const key& k)     const;
-        const value&  operator[]   (const u32& index) const;
-
-    };
-
-    //-------------------------------------------------------------------
-    // SPARSE ARRAY 64
-    //-------------------------------------------------------------------
-
-    template<typename key, typename value>
-    struct sparse_array {
+    struct sparse_set {
 
         // properties
         t*   sparse_elements;
@@ -780,7 +497,7 @@ namespace sld {
         static stack* create       (const u32 capacity, const f32 percentage_max);
         static u32    memory_size  (const u32 capacity, const f32 percentage_max);
         static void   init         (const u32 size, const f32 percentage_max, void* memory);
-        static void   destroy      (sparse_array<key,value>* m);
+        static void   destroy      (sparse_set<key,value>* m);
         static u32    hash_of      (const key& k);   
         static void   hash_of      (const key& k*, const u32 count, u32* hashes);
 
@@ -815,11 +532,11 @@ namespace sld {
     };
 
     //-------------------------------------------------------------------
-    // SPARSE ARRAY 128
+    // SPARSE SET 128
     //-------------------------------------------------------------------
 
     template<typename key, typename value>
-    struct sparse_array {
+    struct sparse_set {
 
         // properties
         t*    sparse_elements;
@@ -833,7 +550,7 @@ namespace sld {
         static stack* create       (const u32 capacity, const f32 percentage_max);
         static u32    memory_size  (const u32 capacity, const f32 percentage_max);
         static void   init         (const u32 size, const f32 percentage_max, void* memory);
-        static void   destroy      (sparse_array<key,value>* m);
+        static void   destroy      (sparse_set<key,value>* m);
         static u32    hash_of      (const key& k);   
         static void   hash_of      (const key& k*, const u32 count, u32* hashes);
 
@@ -882,42 +599,18 @@ namespace sld {
     // MEMORY UTILITIES
     //-------------------------------------------------------------------
 
-    inline void zero_memory(const u32 size, vptr memory) { memset(vptr, 0, size); }
+    inline void zero_memory(void* memory, const u32 size) { memset(memory, 0, size); }
 
     //-------------------------------------------------------------------
     // DATA HASHING
     //-------------------------------------------------------------------
 
-    // data hash
-    u32  hash32         (const vptr data, const u32 size);
-    u64  hash64         (const vptr data, const u32 size);
-    u128 hash128        (const vptr data, const u32 size);
-    
-    // data search
-    u32  hash32_search  (const vptr data, const u32 size, const u32* hashes, const u32 count);
-    u32  hash64_search  (const vptr data, const u32 size, const u32* hashes, const u32 count);
-    u32  hash128_search (const vptr data, const u32 size, const u32* hashes, const u32 count);
-
-
-    //-------------------------------------------------------------------
-    // TYPE HASHING
-    //-------------------------------------------------------------------
-
-    // element hash
-    template<typename t> u32  hash32         (const t* type);
-    template<typename t> u32  hash32         (const t& type);
-    template<typename t> u64  hash64         (const t* type);
-    template<typename t> u64  hash64         (const t& type);
-    template<typename t> u128 hash128        (const t* type);
-    template<typename t> u128 hash128        (const t& type);
-
-    // element search    
-    template<typename t> u32  hash32_search  (const t* type, const u32*  hashes, const u32 count);
-    template<typename t> u32  hash32_search  (const t& type, const u32*  hashes, const u32 count);
-    template<typename t> u64  hash64_search  (const t* type, const u64*  hashes, const u32 count);
-    template<typename t> u64  hash64_search  (const t& type, const u64*  hashes, const u32 count);
-    template<typename t> u128 hash128_search (const t* type, const u128* hashes, const u32 count);
-    template<typename t> u128 hash128_search (const t& type, const u128* hashes, const u32 count);
+    u32  hash_32        (const void* data, const u32 size);
+    u64  hash_64        (const void* data, const u32 size);
+    u128 hash_128       (const void* data, const u32 size);
+    u32  h32_search  (const void* data, const u32 size, const u32* hash, const u32 count = 1);
+    u32  h64_search  (const void* data, const u32 size, const u32* hash, const u32 count = 1);
+    u32  hash128_search (const void* data, const u32 size, const u32* hash, const u32 count = 1);
 };
 
 #endif //SLD_COLLECTIONS_HPP
