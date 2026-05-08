@@ -17,6 +17,7 @@ namespace sld {
     data_buffer_memory_size(
         const u32 buffer_size) {
 
+
         assert(
             buffer_size != 0 &&
             buffer_size <  MAX_CAPACITY
@@ -95,27 +96,35 @@ namespace sld {
         free(db);
     }
 
-    SLD_COLLECTIONS_API bool
-    data_buffer_is_valid(
-        const data_buffer* db) {
-
-        assert(db);
-
-        const bool is_valid = (
-            db->data   != NULL &&
-            db->size   != 0    &&
-            db->length <= db->size
-        );
-
-        return(is_valid);
-    }
-
     SLD_COLLECTIONS_API void
     data_buffer_assert_valid(
         const data_buffer* db) {
 
-        const bool is_valid = data_buffer_is_valid(is_valid);
+        const bool is_valid = (
+            db         != NULL &&
+            db->data   != NULL &&
+            db->size   != 0    &&
+            db->length <= db->size
+        );
+        assert(is_valid);
     }
+
+    SLD_COLLECTIONS_API const byte*
+    data_buffer_data(
+        const data_buffer* db) {
+
+        data_buffer_assert_valid(db);
+        return(db->data)
+    }
+
+    SLD_COLLECTIONS_API u32
+    data_buffer_size_total(
+        const data_buffer* db) {
+
+        data_buffer_assert_valid(db);
+        return(db->size);
+    }
+
 
     SLD_COLLECTIONS_API u32
     data_buffer_size_remaining(
@@ -128,78 +137,86 @@ namespace sld {
     }
 
     SLD_COLLECTIONS_API u32
-    data_buffer_append_from_a_to_b(
-        const data_buffer* db_a,
-        data_buffer*       db_b,
-        const u32          db_a_offset) {
+    data_buffer_length(
+        const data_buffer* db) {
 
-        assert(
-            data_buffer_is_valid(db_a) &&
-            data_buffer_is_valid(db_b) &&
-            db_a_offset < db_a->length
-        );
-
-        vptr       dst              = (vptr)&db_b->data[db_b->length];
-        const vptr src              = (vptr)&db_a->data[db_a_offset];
-        const u32  length_requested = (db_a->length - db_a_offset);
-        const u32  length_available = (db_b->size   - db_b->length); 
-        const u32  length_actual    = (length_requested <= length_available)
-            ? length_requested
-            : length_requested - length_available;
-
-        if (length_available == 0) {
-            return(0);
-        }
-
-        const errno_t error = memmove_s(
-            dst,
-            length_available,
-            src,
-            length_actual
-        );
-        assert(error == 0);
-
-        return(length_actual);
+        data_buffer_assert_valid(db);
+        return(db->length);
     }
 
     SLD_COLLECTIONS_API u32
-    data_buffer_copy_to_dst(
-        const data_buffer* db, 
-        byte*              dst_memory,
-        const u32          dst_size,
-        const u32          db_offset) {
+    data_buffer_copy_to_mem(
+        const data_buffer* db,
+        const u32          db_offset,
+        const u32          db_size,
+        byte*              mem_ptr,
+        const u32          mem_size) {
 
+        data_buffer_assert_valid(db);
         assert(
-            data_buffer_is_valid(db) &&
-            dst_memory != NULL       &&
-            dst_size   != 0          &&
-            db_offset  <  db->length
+            db_offset <  db->length &&
+            db_size   <= db->length &&
+            mem_ptr   != NULL       &&
+            mem_size  != 0          &&
+            (db_offset + db_size) < db->size
         );
-    
-        const vptr src            = (vptr)&db->data[db_offset];
-        const u32  size_requested = (db->length - db_offset);
-        const u32  size_actual    = (size_requested <= dst_size)
-            ? size_requested
-            : size_requested - dst_size;
+
+        const u32 bytes_available = (db->size - db->length);
+        const u32 bytes_copied    = (db_size <= bytes_available)
+            ? db_size
+            : db_size - bytes_available;
 
         const errno_t error = memmove_s(
-            (vptr)dst_memory,
-            size_actual,
-            src,
-            size_requested
+            mem_ptr,                    // dst mem
+            mem_size,                   // dst size
+            (vptr)&db->data[db_offset], // src mem
+            bytes_copied                // src size
         );
         assert(error == 0);
 
-        return(size_actual);
+        return(bytes_copied);
+    }
+    SLD_COLLECTIONS_API u32
+    data_buffer_append_src_to_dst(
+        const data_buffer* src_db,
+        const u32          src_offset,
+        const u32          src_size,
+        data_buffer*       dst_db) {
+
+        data_buffer_assert_valid(src_db);
+        data_buffer_assert_valid(dst_db);
+
+        assert(
+            src_size > 0 &&
+            (src_offset + src_size) < src_db->length; 
+        );
+
+        vptr       dst_mem            = (vptr)&dst_db->data[dst_db->length];
+        const u32  dst_size_remaining = (dst_db->size - dst_db->length);
+        const u32  dst_size           = (dst_size_remaining <= src_size) ? dst_size_remaining : (src_size - dst_size_remaining); 
+        const vptr src_mem            = (vptr)&src_db->data[src_offset];
+
+        const errno_t error = memmove_s(
+            dst_mem,
+            dst_size,
+            src_mem,
+            src_size
+        );
+        dst_db->length += dst_size;
+        data_buffer_assert_valid(dst_db);
+
+        return(dst_size);
     }
 
     SLD_COLLECTIONS_API u32
-    data_buffer_copy_from_a_to_b(
-        const data_buffer* db_a,
-        data_buffer*       db_b,        
-        const u32          db_a_offset,
-        const u32          db_b_offset) {
-    
+    data_buffer_copy_src_to_dst(
+        const data_buffer* src_db,
+        const u32          src_offset,
+        const u32          src_size,
+        data_buffer*       dst_db,
+        const u32          dst_offset,
+        const u32          dst_size) {
+
     }
 
     SLD_COLLECTIONS_API void
@@ -207,25 +224,49 @@ namespace sld {
         data_buffer* db) {
 
         data_buffer_assert_valid(db);
-
-        zero_memory((vptr)db->data, db->size);
         db->length = 0;
+        zero_memory((vptr)&db->data, db->size);
     }
 
     SLD_COLLECTIONS_API u32
-    data_buffer_append_from_src(
-        data_buffer* b,
-        const byte* src_memory,
-        const u32   src_size) {
-
-    }
-
-    SLD_COLLECTIONS_API u32
-    data_buffer_copy_from_src(
-        data_buffer* b,
-        const u32    b_offset, 
-        const byte*  src_memory,
+    data_buffer_update(
+        data_buffer* db,
+        const u32    db_offset,
+        const byte*  src_mem,
         const u32    src_size) {
 
+        data_buffer_assert_valid(db);
+        assert(
+            db_offset <  db->length &&
+            src_mem   != NULL       &&
+            src_size  != 0
+        );
+
+        const u32 dst_size = (db->size - db->length);
+        const u32 diff     = (db->length - db_offset);
+        assert(diff <= dst_size);
+
+        vptr dst_mem = (vptr)&db->data[db_offset];
+
+        memmove_s(
+            dst_mem,
+            dst_size,
+            src_mem,
+            src_size
+        );
+    }   
+
+    SLD_COLLECTIONS_API u32
+    data_buffer_append_from_mem(
+        data_buffer* db,
+        const byte*  src_mem, 
+        const u32    src_size) {
+        
+        data_buffer_assert_valid(db);
+        assert(
+            src_mem != NULL
+        );
+
     }
+
 };

@@ -117,16 +117,17 @@ namespace sld {
     SLD_COLLECTIONS_API data_buffer*    data_buffer_create               (const u32 buffer_size);
     SLD_COLLECTIONS_API data_buffer*    data_buffer_memory_init          (const u32 buffer_size, const u32 mem_size, void* mem_ptr);
     SLD_COLLECTIONS_API void            data_buffer_destroy              (data_buffer* db);
-    SLD_COLLECTIONS_API bool            data_buffer_is_valid             (const data_buffer* db);
-    SLD_COLLECTIONS_API bool            data_buffer_assert_valid         (const data_buffer* db);
+    SLD_COLLECTIONS_API void            data_buffer_assert_valid         (const data_buffer* db);
     SLD_COLLECTIONS_API const byte*     data_buffer_data                 (const data_buffer* db);
     SLD_COLLECTIONS_API u32             data_buffer_size_total           (const data_buffer* db);
     SLD_COLLECTIONS_API u32             data_buffer_size_remaining       (const data_buffer* db);
     SLD_COLLECTIONS_API u32             data_buffer_length               (const data_buffer* db);
-    SLD_COLLECTIONS_API u32             data_buffer_reset                (data_buffer* db);
-    SLD_COLLECTIONS_API u32             data_buffer_update               (data_buffer* db, const u32   db_offset, const byte* src_mem, const u32 src_size);
-    SLD_COLLECTIONS_API u32             data_buffer_append               (data_buffer* db, const byte* src_mem,   const u32   src_size);
-    SLD_COLLECTIONS_API u32             data_buffer_copy_to_dst          (data_buffer* db, const u32   db_offset, const u32   size, byte* dst_mem, const u32 dst_size);
+    SLD_COLLECTIONS_API u32             data_buffer_copy_to_mem          (const data_buffer* db,     const u32 db_offset,  const u32 db_size,  byte*        mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API u32             data_buffer_append_src_to_dst    (const data_buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db);
+    SLD_COLLECTIONS_API u32             data_buffer_copy_src_to_dst      (const data_buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db, const u32 dst_offset, const u32 dst_size);
+    SLD_COLLECTIONS_API void            data_buffer_reset                (data_buffer* db);
+    SLD_COLLECTIONS_API void            data_buffer_update               (data_buffer* db, const u32   db_offset, const byte* src_mem, const u32 src_size);
+    SLD_COLLECTIONS_API u32             data_buffer_append_from_mem      (data_buffer* db, const byte* src_mem,   const u32   src_size);
 
     //--------------------------------------------------------------------
     // STACK BUFFER
