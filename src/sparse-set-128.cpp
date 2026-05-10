@@ -1,23 +1,9 @@
 #pragma once
 
-#include "sld-collections.hpp" 
+#include "sld-collections-internal.hpp" 
 
 namespace sld {
 
-    struct sparse_set_128 {
-        struct  {
-            element* sparse_elements;
-            index*   dense_indexes;
-            h128*    dense_hashes;
-        } array;
-        struct {
-            u32 element;
-            u32 key;
-        } size;
-        u32      capacity;
-        u32      count;
-        f32      percentage_max;
-    };
 
     SLD_COLLECTIONS_API u32             sparse_set_128_memory_size       (const u32 stride, const u32 capacity);
     SLD_COLLECTIONS_API sparse_set_128* sparse_set_128_create            (const u32 stride, const u32 capacity);

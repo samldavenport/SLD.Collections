@@ -60,6 +60,10 @@ namespace sld {
         };
     };
 
+    //floats
+    typedef float  f32;
+    typedef double f64;
+
     // booleans
     typedef u8  b8;
     typedef u16 b16;

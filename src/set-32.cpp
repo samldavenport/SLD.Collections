@@ -1,17 +1,9 @@
 #pragma once
 
-#include "sld-collections.hpp"
+#include "sld-collections-internal.hpp"
 
 namespace sld {
     
-    struct set_32 {
-        element* elements;
-        h32*     hashes;        
-        u32      stride;
-        u32      capacity;
-        u32      count;
-    };
-
     
     SLD_COLLECTIONS_API u32             set_32_memory_size               (const u32 stride, const u32 capacity);
     SLD_COLLECTIONS_API set_32*         set_32_create                    (const u32 stride, const u32 capacity);

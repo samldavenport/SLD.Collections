@@ -1,19 +1,8 @@
 #pragma once
 
-#include "sld-collections.hpp"
+#include "sld-collections-internal.hpp"
 
 namespace sld {
-
-    struct map_64 {
-        value* array_value;
-        key*   array_key;
-        h64*   array_hash; 
-        u32    size_value;
-        u32    size_key;
-        u32    capacity;       
-        u32    count;       
-    };
-
 
     SLD_COLLECTIONS_API u64             map_64_list_memory_size          (const u32 key_size, const u32 val_size, const u32 capacity);
     SLD_COLLECTIONS_API map_64*         map_64_list_create               (const u32 key_size, const u32 val_size, const u32 capacity);

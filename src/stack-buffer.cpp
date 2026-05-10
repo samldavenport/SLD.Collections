@@ -1,16 +1,8 @@
 #pragma once
 
-#include "sld-collections.hpp"
+#include "sld-collections-internal.hpp"
 
 namespace sld {
-
-    struct stack_buffer {
-        byte* data;
-        u32   size;
-        u32   ptr;        
-    };
-
-    constexpr u32 STRUCT_SIZE_STACK_BUFFER = sizeof(stack_buffer);
 
     SLD_COLLECTIONS_API u32             stack_buffer_memory_size         (const u32 stack_size);
     SLD_COLLECTIONS_API stack_buffer*   stack_buffer_create              (const u32 stack_size);

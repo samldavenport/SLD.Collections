@@ -1,15 +1,7 @@
-#include "sld-collections.hpp"
+#include "sld-collections-internal.hpp"
 
 namespace sld {
 
-    struct queue_buffer {
-        byte* data;
-        u32   size;
-        u32   head;
-        u32   tail;
-    };
-
-    
     SLD_COLLECTIONS_API u32             queue_memory_size                (const u32 queue_size);
     SLD_COLLECTIONS_API queue_buffer*   queue_buffer_create              (const u32 queue_size);
     SLD_COLLECTIONS_API queue_buffer*   queue_buffer_memory_init         (const u32 queue_size, void* mem_ptr, const u32 mem_size);

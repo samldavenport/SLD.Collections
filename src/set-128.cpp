@@ -1,17 +1,8 @@
 #pragma once
 
-#include "sld-collections.hpp"
+#include "sld-collections-internal.hpp"
 
 namespace sld {
-
-    struct set_128 {
-        element* elements;
-        h128*    hashes;        
-        u128     stride;
-        u128     capacity;
-        u128     count;
-    };
-
     
     SLD_COLLECTIONS_API u128            set_128_memory_size              (const u128 stride, const u128 capacity);
     SLD_COLLECTIONS_API set_128*        set_128_create                   (const u128 stride, const u128 capacity);

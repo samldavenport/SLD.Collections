@@ -4,17 +4,6 @@
 
 namespace sld {
 
-    struct map_128 {
-        value* array_value;
-        key*   array_key;
-        h128*  array_hash; 
-        u32    size_value;
-        u32    size_key;
-        u32    capacity;       
-        u32    count;       
-    };
-
-
     SLD_COLLECTIONS_API u128            map_128_list_memory_size         (const u128 key_size, const u32 val_size, const u32 capacity);
     SLD_COLLECTIONS_API map_128*        map_128_list_create              (const u128 key_size, const u32 val_size, const u32 capacity);
     SLD_COLLECTIONS_API map_128*        map_128_list_memory_init         (const u128 key_size, const u32 val_size, const u32 capacity, void* mem_ptr, const u128 mem_size);

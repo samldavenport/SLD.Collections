@@ -1,15 +1,9 @@
 #pragma once
 
-#include "sld-collections.hpp"
+#include "sld-collections-internal.hpp"
 
 namespace sld {
 
-    struct queue_list {
-        void*  elements;
-        u32   stride;
-        u32   capacity;
-        u32   count;
-    };
 
     SLD_COLLECTIONS_API u32             queue_list_memory_size           (const u32 stride, const u32 capacity);
     SLD_COLLECTIONS_API queue_list*     queue_list_create                (const u32 stride, const u32 capacity);
