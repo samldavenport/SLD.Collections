@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <cstdint>
 #include <assert.h>
+#include <intrin.h>
 
 #ifdef SLD_COLLECTIONS_DLL
 #   define SLD_COLLECTIONS_API __declspec(dllexport)
@@ -12,7 +13,7 @@
 #endif
 
 #define SLD_COLLECTIONS_UTILITY  inline
-#define SLD_COLLECTIONS_CONSTANT static constexpr
+#define SLD_COLLECTIONS_CONSTANT 
 
 namespace sld {
 
@@ -20,8 +21,8 @@ namespace sld {
     // CONSTANTS
     //--------------------------------------------------------------------
 
-    SLD_COLLECTIONS_CONSTANT u32 INVALID_INDEX = 0xFFFFFFFF;
-    SLD_COLLECTIONS_CONSTANT u32 MAX_CAPACITY  = 0xFFFFFFFE;
+    static constexpr u32 INVALID_INDEX = 0xFFFFFFFF;
+    static constexpr u32 MAX_CAPACITY  = 0xFFFFFFFE;
 
     //--------------------------------------------------------------------
     // TYPES
@@ -53,10 +54,18 @@ namespace sld {
     struct u128 {
         union {
             struct {
-                u64 hi;
-                u64 lo;
+                u32 u32_0;
+                u32 u32_1;
+                u32 u32_2;
+                u32 u32_3;
             };
-            u64 val[2];
+            struct {
+                u64 u64_lo;
+                u64 u64_hi;
+            };
+            u64     val64[2];
+            u32     val32[4];
+            __m128i simd_reg;
         };
     };
 
@@ -88,30 +97,26 @@ namespace sld {
     typedef u64  h64;
     typedef u128 h128;
 
-    // buffer collections
-    typedef struct data_buffer;
-    typedef struct stack_buffer;
-    typedef struct queue_buffer;
-
-    // list collections
+    // collections
     typedef struct array_list;
-    typedef struct stack_list;
-    typedef struct queue_list;
-    typedef struct single_linked_list;
-    typedef struct single_linked_node;
+    typedef struct data_buffer;
     typedef struct double_linked_list;
     typedef struct double_linked_node;
-
-    // hash collections
-    typedef struct set_32;
-    typedef struct set_64;
-    typedef struct set_128;
     typedef struct map_32;
     typedef struct map_64; 
     typedef struct map_128;
+    typedef struct set_32;
+    typedef struct set_64;
+    typedef struct set_128;
+    typedef struct single_linked_list;
+    typedef struct single_linked_node;
+    typedef struct stack_buffer;
+    typedef struct stack_list;
     typedef struct sparse_set_32;
     typedef struct sparse_set_64;
     typedef struct sparse_set_128;
+    typedef struct queue_buffer;
+    typedef struct queue_list;
 
     //--------------------------------------------------------------------
     // DATA BUFFER
