@@ -4,6 +4,10 @@
 			"name": "SLD.Collections",
 			"path": "../../"
 		},
+		{
+			"name": "SLD.Core",
+			"path": "../../SLD.Core"
+		},
 	],
 	"settings": {
 		"files.associations": {
