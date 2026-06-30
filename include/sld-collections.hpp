@@ -25,60 +25,60 @@ namespace sld {
     // COLLECTIONS
     //--------------------------------------------------------------------
 
+    struct buffer;
     struct array_list;
-    struct data_buffer;
     struct double_linked_list;
     struct double_linked_node;
     struct map;
     struct set;
     struct single_linked_list;
     struct single_linked_node;
-    struct stack_buffer;
+    struct stack;
     struct stack_list;
     struct sparse_set;
     struct queue_buffer;
     struct queue_list;
 
     //--------------------------------------------------------------------
-    // DATA BUFFER
+    // BUFFER
     //--------------------------------------------------------------------
 
-    SLD_COLLECTIONS_API u32             data_buffer_memory_size          (const u32 buffer_size);
-    SLD_COLLECTIONS_API data_buffer*    data_buffer_create               (const u32 buffer_size);
-    SLD_COLLECTIONS_API data_buffer*    data_buffer_memory_init          (const u32 buffer_size, const u32 mem_size, void* mem_ptr);
-    SLD_COLLECTIONS_API void            data_buffer_destroy              (data_buffer* db);
-    SLD_COLLECTIONS_API void            data_buffer_assert_valid         (const data_buffer* db);
-    SLD_COLLECTIONS_API const byte*     data_buffer_data                 (const data_buffer* db);
-    SLD_COLLECTIONS_API u32             data_buffer_size_total           (const data_buffer* db);
-    SLD_COLLECTIONS_API u32             data_buffer_size_remaining       (const data_buffer* db);
-    SLD_COLLECTIONS_API u32             data_buffer_length               (const data_buffer* db);
-    SLD_COLLECTIONS_API u32             data_buffer_copy_to_mem          (const data_buffer* db,     const u32 db_offset,  const u32 db_size,  byte*        mem_ptr, const u32 mem_size);
-    SLD_COLLECTIONS_API u32             data_buffer_append_src_to_dst    (const data_buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db);
-    SLD_COLLECTIONS_API u32             data_buffer_copy_src_to_dst      (const data_buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db, const u32 dst_offset, const u32 dst_size);
-    SLD_COLLECTIONS_API void            data_buffer_reset                (data_buffer* db);
-    SLD_COLLECTIONS_API void            data_buffer_update               (data_buffer* db, const u32   db_offset, const byte* src_mem, const u32 src_size);
-    SLD_COLLECTIONS_API u32             data_buffer_append_from_mem      (data_buffer* db, const byte* src_mem,   const u32   src_size);
+    SLD_COLLECTIONS_API u32             buffer_memory_size          (const u32 buffer_size);
+    SLD_COLLECTIONS_API buffer*         buffer_create               (const u32 buffer_size);
+    SLD_COLLECTIONS_API buffer*         buffer_memory_init          (const u32 buffer_size, const u32 mem_size, void* mem_ptr);
+    SLD_COLLECTIONS_API void            buffer_destroy              (buffer* db);
+    SLD_COLLECTIONS_API void            buffer_assert_valid         (const buffer* db);
+    SLD_COLLECTIONS_API const byte*     buffer_data                 (const buffer* db);
+    SLD_COLLECTIONS_API u32             buffer_size_total           (const buffer* db);
+    SLD_COLLECTIONS_API u32             buffer_size_remaining       (const buffer* db);
+    SLD_COLLECTIONS_API u32             buffer_length               (const buffer* db);
+    SLD_COLLECTIONS_API u32             buffer_copy_to_mem          (const buffer* db,     const u32 db_offset,  const u32 db_size,  byte*        mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API u32             buffer_append_src_to_dst    (const buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db);
+    SLD_COLLECTIONS_API u32             buffer_copy_src_to_dst      (const buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db, const u32 dst_offset, const u32 dst_size);
+    SLD_COLLECTIONS_API void            buffer_reset                (buffer* db);
+    SLD_COLLECTIONS_API void            buffer_update               (buffer* db, const u32   db_offset, const byte* src_mem, const u32 src_size);
+    SLD_COLLECTIONS_API u32             buffer_append_from_mem      (buffer* db, const byte* src_mem,   const u32   src_size);
 
     //--------------------------------------------------------------------
-    // STACK BUFFER
+    // STACK
     //--------------------------------------------------------------------
 
-    SLD_COLLECTIONS_API u32             stack_buffer_memory_size         (const u32 stack_size);
-    SLD_COLLECTIONS_API stack_buffer*   stack_buffer_create              (const u32 stack_size);
-    SLD_COLLECTIONS_API stack_buffer*   stack_buffer_memory_init         (const u32 stack_size, void* mem_ptr, const u32 mem_size);
-    SLD_COLLECTIONS_API void            stack_buffer_destroy             (stack_buffer* sb);    
-    SLD_COLLECTIONS_API bool            stack_buffer_is_valid            (const stack_buffer* sb);
-    SLD_COLLECTIONS_API void            stack_buffer_assert_valid        (const stack_buffer* sb);
-    SLD_COLLECTIONS_API byte*           stack_buffer_data                (const stack_buffer* sb);
-    SLD_COLLECTIONS_API u32             stack_buffer_size_total          (const stack_buffer* sb);
-    SLD_COLLECTIONS_API u32             stack_buffer_size_free           (const stack_buffer* sb);
-    SLD_COLLECTIONS_API u32             stack_buffer_size_used           (const stack_buffer* sb);
-    SLD_COLLECTIONS_API const byte*     stack_buffer_head                (const stack_buffer* sb);
-    SLD_COLLECTIONS_API const byte*     stack_buffer_tail                (const stack_buffer* sb);
-    SLD_COLLECTIONS_API const byte*     stack_buffer_peek                (const stack_buffer* sb, const u32 size);
-    SLD_COLLECTIONS_API void            stack_buffer_reset               (stack_buffer* sb);
-    SLD_COLLECTIONS_API u32             stack_buffer_push_data           (stack_buffer* sb, const u32 size, const byte* data);
-    SLD_COLLECTIONS_API byte*           stack_buffer_pull_data           (stack_buffer* sb, const u32 size);
+    SLD_COLLECTIONS_API u32             stack_memory_size         (const u32 stack_size);
+    SLD_COLLECTIONS_API stack*          stack_create              (const u32 stack_size);
+    SLD_COLLECTIONS_API stack*          stack_memory_init         (const u32 stack_size, void* mem_ptr, const u32 mem_size);
+    SLD_COLLECTIONS_API void            stack_destroy             (stack* sb);    
+    SLD_COLLECTIONS_API bool            stack_is_valid            (const stack* sb);
+    SLD_COLLECTIONS_API void            stack_assert_valid        (const stack* sb);
+    SLD_COLLECTIONS_API byte*           stack_data                (const stack* sb);
+    SLD_COLLECTIONS_API u32             stack_size_total          (const stack* sb);
+    SLD_COLLECTIONS_API u32             stack_size_free           (const stack* sb);
+    SLD_COLLECTIONS_API u32             stack_size_used           (const stack* sb);
+    SLD_COLLECTIONS_API const byte*     stack_head                (const stack* sb);
+    SLD_COLLECTIONS_API const byte*     stack_tail                (const stack* sb);
+    SLD_COLLECTIONS_API const byte*     stack_peek                (const stack* sb, const u32 size);
+    SLD_COLLECTIONS_API void            stack_reset               (stack* sb);
+    SLD_COLLECTIONS_API u32             stack_push_data           (stack* sb, const u32 size, const byte* data);
+    SLD_COLLECTIONS_API byte*           stack_pull_data           (stack* sb, const u32 size);
 
     //--------------------------------------------------------------------
     // QUEUE BUFFER
@@ -242,6 +242,7 @@ namespace sld {
     //--------------------------------------------------------------------
     // SPARSE SET
     //--------------------------------------------------------------------
+
 
     SLD_COLLECTIONS_API u32             sparse_set_memory_size        (const u32 stride, const u32 capacity);
     SLD_COLLECTIONS_API sparse_set*     sparse_set_create             (const u32 stride, const u32 capacity);
