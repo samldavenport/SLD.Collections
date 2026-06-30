@@ -127,7 +127,7 @@ namespace sld {
     SLD_COLLECTIONS_API u32             array_list_capacity              (const array_list* al);
     SLD_COLLECTIONS_API u32             array_list_count                 (const array_list* al);
     SLD_COLLECTIONS_API element*        array_list_index                 (const array_list* al, const u32     index);
-    SLD_COLLECTIONS_API u32             array_list_index_of              (const array_list* al, const element elmnt);
+    SLD_COLLECTIONS_API u32             array_list_index_of              (const array_list* al, const element* elmnt);
     SLD_COLLECTIONS_API void            array_list_reset                 (array_list* al);
     SLD_COLLECTIONS_API void            array_list_reverse               (array_list* al);
     SLD_COLLECTIONS_API u32             array_list_remove_element        (array_list* al, const element* elmnt);
@@ -184,7 +184,7 @@ namespace sld {
     SLD_COLLECTIONS_API const void*     queue_list_tail_element          (const queue_list* ql);
     SLD_COLLECTIONS_API const void*     queue_list_peek_element          (const queue_list* ql, const u32 count);
     SLD_COLLECTIONS_API void            queue_list_reset                 (queue_list* ql);
-    SLD_COLLECTIONS_API u32             queue_list_push_element          (queue_list* ql, element elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API u32             queue_list_push_element          (queue_list* ql, element* elmnt, const u32 count = 1);
     SLD_COLLECTIONS_API void*           queue_list_pop_element           (queue_list* ql, const u32 count = 1);
 
     //--------------------------------------------------------------------
@@ -205,7 +205,7 @@ namespace sld {
     SLD_COLLECTIONS_API u32             map_32_size_total                (const map_32* m);
     SLD_COLLECTIONS_API u32             map_32_size_used                 (const map_32* m);
     SLD_COLLECTIONS_API u32             map_32_size_free                 (const map_32* m);
-    SLD_COLLECTIONS_API bool            map_32_does_key_exist            (const map_32* m, const key    k);
+    SLD_COLLECTIONS_API bool            map_32_does_key_exist            (const map_32* m, const key*   k);
     SLD_COLLECTIONS_API bool            map_32_does_value_exist          (const map_32* m, const value* v);
     SLD_COLLECTIONS_API bool            map_32_lookup                    (const map_32* m, const key*   k, value* v);
     SLD_COLLECTIONS_API void            map_32_reset                     (map_32* m);
@@ -231,13 +231,13 @@ namespace sld {
     SLD_COLLECTIONS_API u32             map_64_size_total                (const map_64* m);
     SLD_COLLECTIONS_API u32             map_64_size_used                 (const map_64* m);
     SLD_COLLECTIONS_API u32             map_64_size_free                 (const map_64* m);
-    SLD_COLLECTIONS_API bool            map_64_does_key_exist            (const map_64* m, const key    k);
+    SLD_COLLECTIONS_API bool            map_64_does_key_exist            (const map_64* m, const key*   k);
     SLD_COLLECTIONS_API bool            map_64_does_value_exist          (const map_64* m, const value* v);
     SLD_COLLECTIONS_API bool            map_64_lookup                    (const map_64* m, const key*   k, value* v);
     SLD_COLLECTIONS_API void            map_64_reset                     (map_64* m);
-    SLD_COLLECTIONS_API u32             map_64_remove                    (map_64* m, const key* k, const value* v, const u64 count = 1);
-    SLD_COLLECTIONS_API u32             map_64_insert                    (map_64* m, const key* k, const value* v, const u64 count = 1, h64* h = NULL); 
-    SLD_COLLECTIONS_API u32             map_64_update                    (map_64* m, const key* k, const value* v, const u64 count = 1); 
+    SLD_COLLECTIONS_API u32             map_64_remove                    (map_64* m, const key* k, const value* v, const u32 count = 1);
+    SLD_COLLECTIONS_API u32             map_64_insert                    (map_64* m, const key* k, const value* v, const u32 count = 1, h64* h = NULL); 
+    SLD_COLLECTIONS_API u32             map_64_update                    (map_64* m, const key* k, const value* v, const u32 count = 1); 
 
     //--------------------------------------------------------------------
     // MAP 128
@@ -251,19 +251,19 @@ namespace sld {
     SLD_COLLECTIONS_API void            map_128_list_assert_valid        (const map_128* m);
     SLD_COLLECTIONS_API const value*    map_128_values                   (const map_128* m);
     SLD_COLLECTIONS_API const key*      map_128_keys                     (const map_128* m);
-    SLD_COLLECTIONS_API const hash128   map_128_hashes                   (const map_128* m);
+    SLD_COLLECTIONS_API const h128      map_128_hashes                   (const map_128* m);
     SLD_COLLECTIONS_API u32             map_128_capacity                 (const map_128* m);
     SLD_COLLECTIONS_API u32             map_128_count                    (const map_128* m);
     SLD_COLLECTIONS_API u32             map_128_size_total               (const map_128* m);
     SLD_COLLECTIONS_API u32             map_128_size_used                (const map_128* m);
     SLD_COLLECTIONS_API u32             map_128_size_free                (const map_128* m);
-    SLD_COLLECTIONS_API bool            map_128_does_key_exist           (const map_128* m, const key    k);
+    SLD_COLLECTIONS_API bool            map_128_does_key_exist           (const map_128* m, const key*   k);
     SLD_COLLECTIONS_API bool            map_128_does_value_exist         (const map_128* m, const value* v);
     SLD_COLLECTIONS_API bool            map_128_lookup                   (const map_128* m, const key*   k, value* v);
     SLD_COLLECTIONS_API void            map_128_reset                    (map_128* m);
-    SLD_COLLECTIONS_API u32             map_128_remove                   (map_128* m, const key* k, const value* v, const u128 count = 1);
-    SLD_COLLECTIONS_API u32             map_128_insert                   (map_128* m, const key* k, const value* v, const u128 count = 1, h128* h = NULL); 
-    SLD_COLLECTIONS_API u32             map_128_update                   (map_128* m, const key* k, const value* v, const u128 count = 1); 
+    SLD_COLLECTIONS_API u32             map_128_remove                   (map_128* m, const key* k, const value* v, const u32 count = 1);
+    SLD_COLLECTIONS_API u32             map_128_insert                   (map_128* m, const key* k, const value* v, const u32 count = 1, h128* h = NULL); 
+    SLD_COLLECTIONS_API u32             map_128_update                   (map_128* m, const key* k, const value* v, const u32 count = 1); 
 
     //--------------------------------------------------------------------
     // SET 32
@@ -285,10 +285,10 @@ namespace sld {
     SLD_COLLECTIONS_API u32             set_32_capacity                  (const set_32* s);
     SLD_COLLECTIONS_API u32             set_32_count                     (const set_32* s);
     SLD_COLLECTIONS_API u32             set_32_index                     (const set_32* s, const u32  index);
-    SLD_COLLECTIONS_API u32             set_32_index_of                  (const set_32* s, const element elmnt);
+    SLD_COLLECTIONS_API u32             set_32_index_of                  (const set_32* s, const element* elmnt);
     SLD_COLLECTIONS_API void            set_32_reset                     (set_32* s);
     SLD_COLLECTIONS_API void            set_32_reverse                   (set_32* s);
-    SLD_COLLECTIONS_API u32             set_32_remove_element            (set_32* s, const element elmnt);
+    SLD_COLLECTIONS_API u32             set_32_remove_element            (set_32* s, const element* elmnt);
     SLD_COLLECTIONS_API u32             set_32_remove_at                 (set_32* s, const u32  index);
     SLD_COLLECTIONS_API u32             set_32_insert_back               (set_32* s, const element* push,   const u32      count = 1);
     SLD_COLLECTIONS_API u32             set_32_insert_front              (set_32* s, const element* push,   const u32      count = 1);
@@ -317,10 +317,10 @@ namespace sld {
     SLD_COLLECTIONS_API u32             set_64_capacity                  (const set_64* s);
     SLD_COLLECTIONS_API u32             set_64_count                     (const set_64* s);
     SLD_COLLECTIONS_API u32             set_64_index                     (const set_64* s, const u64  index);
-    SLD_COLLECTIONS_API u32             set_64_index_of                  (const set_64* s, const element elmnt);
+    SLD_COLLECTIONS_API u32             set_64_index_of                  (const set_64* s, const element* elmnt);
     SLD_COLLECTIONS_API void            set_64_reset                     (set_64* s);
     SLD_COLLECTIONS_API void            set_64_reverse                   (set_64* s);
-    SLD_COLLECTIONS_API u32             set_64_remove_element            (set_64* s, const element elmnt);
+    SLD_COLLECTIONS_API u32             set_64_remove_element            (set_64* s, const element* elmnt);
     SLD_COLLECTIONS_API u32             set_64_remove_at                 (set_64* s, const u64  index);
     SLD_COLLECTIONS_API u32             set_64_insert_back               (set_64* s, const void* push,   const u32   count = 1);
     SLD_COLLECTIONS_API u32             set_64_insert_front              (set_64* s, const void* push,   const u32   count = 1);
@@ -354,12 +354,12 @@ namespace sld {
     SLD_COLLECTIONS_API void            set_128_reverse                  (set_128* s);
     SLD_COLLECTIONS_API u128            set_128_remove_element           (set_128* s, const element* elmnt);
     SLD_COLLECTIONS_API u128            set_128_remove_at                (set_128* s, const u128     index);
-    SLD_COLLECTIONS_API u128            set_128_insert_back              (set_128* s, const element* push,   const u128     count = 1);
-    SLD_COLLECTIONS_API u128            set_128_insert_front             (set_128* s, const element* push,   const u128     count = 1);
-    SLD_COLLECTIONS_API void            set_128_insert_before_index      (set_128* s, const element* insert, const u128     before_index, const u128 count = 1);
-    SLD_COLLECTIONS_API void            set_128_insert_before_element    (set_128* s, const element* insert, const element* before_elmnt, const u128 count = 1);
-    SLD_COLLECTIONS_API void            set_128_insert_after_index       (set_128* s, const element* insert, const u128     after_index,  const u128 count = 1);
-    SLD_COLLECTIONS_API void            set_128_insert_after_element     (set_128* s, const element* insert, const element* after_elmnt,  const u128 count = 1);
+    SLD_COLLECTIONS_API u128            set_128_insert_back              (set_128* s, const element* push,   const u32     count = 1);
+    SLD_COLLECTIONS_API u128            set_128_insert_front             (set_128* s, const element* push,   const u32     count = 1);
+    SLD_COLLECTIONS_API void            set_128_insert_before_index      (set_128* s, const element* insert, const u128     before_index, const u32 count = 1);
+    SLD_COLLECTIONS_API void            set_128_insert_before_element    (set_128* s, const element* insert, const element* before_elmnt, const u32 count = 1);
+    SLD_COLLECTIONS_API void            set_128_insert_after_index       (set_128* s, const element* insert, const u128     after_index,  const u32 count = 1);
+    SLD_COLLECTIONS_API void            set_128_insert_after_element     (set_128* s, const element* insert, const element* after_elmnt,  const u32 count = 1);
 
     //--------------------------------------------------------------------
     // SPARSE SET 32

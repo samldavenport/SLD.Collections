@@ -1,18 +1,3 @@
 #pragma once
 
-#include "data-buffer.cpp"
-#include "stack-buffer.cpp"
-#include "queue-buffer.cpp"
-#include "array-list.cpp"
-#include "stack-list.cpp"
-#include "queue-list.cpp"
-#include "set-32.cpp"
-#include "set-64.cpp"
-#include "set-128.cpp"
-#include "map-32.cpp"
-#include "map-64.cpp"
-#include "map-128.cpp"
-#include "sparse-array-32.cpp"
-#include "sparse-array-64.cpp"
-#include "sparse-array-128.cpp"
-#include "hash.cpp"
+#define SLD_COLLECTIONS_DLL
