@@ -196,7 +196,6 @@ namespace sld {
         element*  dequeue      (void);
         const u32 stride       (void)            const;
         void      assert_valid (void)            const;
-        const u32 stride       (void)            const;
         const u32 capacity     (void)            const;
         const u32 count        (void)            const;
         u32       size_total   (void)            const;
