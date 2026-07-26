@@ -59,7 +59,7 @@ namespace sld {
 
         byte* _data;
         u32   _size;
-        u32   _position;
+        u32   _position; 
     
     public:
        
@@ -67,6 +67,7 @@ namespace sld {
         void        reset      (void);
         u32         push       (const u32 size, const byte* data);
         byte*       pull       (const u32 size);
+        void        validate   (void)           const;
         const byte* head       (void)           const;
         const byte* tail       (void)           const;
         const byte* peek       (const u32 size) const;
