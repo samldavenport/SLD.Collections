@@ -9,9 +9,6 @@
 #   define SLD_COLLECTIONS_API __declspec(dllimport)
 #endif
 
-#define SLD_COLLECTIONS_UTILITY  inline
-#define SLD_COLLECTIONS_CONSTANT 
-
 namespace sld {
 
     //--------------------------------------------------------------------
@@ -66,20 +63,21 @@ namespace sld {
     
     public:
        
-        void        init      (void* mem_ptr, const u32 mem_size);
-        void        reset     (void);
-        u32         push_data (const u32 size, const byte* data);
-        byte*       pull_data (const u32 size);
-        const byte* head      (void)           const;
-        const byte* tail      (void)           const;
-        const byte* peek      (const u32 size) const;
-        const u32   size_total(void);
-        const u32   size_free (void);
-        const u32   size_used (void);
+        void        init       (void* mem_ptr, const u32 mem_size);
+        void        reset      (void);
+        u32         push       (const u32 size, const byte* data);
+        byte*       pull       (const u32 size);
+        const byte* head       (void)           const;
+        const byte* tail       (void)           const;
+        const byte* peek       (const u32 size) const;
+        const u32   size_total (void)           const;
+        const u32   size_free  (void)           const;
+        const u32   size_used  (void)           const;
 
-        template<typename t> t* push_struct(u32 count = 1);
-        template<typename t> t* pull_struct(u32 count = 1);
+        template<typename t> t* push_struct (u32 count = 1);
+        template<typename t> t* pull_struct (u32 count = 1);
     };
+
     //--------------------------------------------------------------------
     // QUEUE BUFFER
     //--------------------------------------------------------------------
@@ -95,20 +93,21 @@ namespace sld {
         
     public:
 
-        void        assert_valid (void);
-        byte*       data         (void);
-        u32         size_total   (void);
-        u32         size_free    (void);
-        u32         size_used    (void);
-        const byte* head         (void);
-        const byte* tail         (void);
-        const byte* peek         (void);
+        void        init         (void* mem_ptr, const u32 mem_size);
         void        reset        (void);
         u32         push_data    (const u32 size, const byte* data);
         byte*       pop_data     (const u32 size);
+        void        assert_valid (void) const;
+        u32         size_total   (void) const;
+        u32         size_free    (void) const;
+        u32         size_used    (void) const;
+        const byte* head         (void) const;
+        const byte* tail         (void) const;
+        const byte* peek         (void) const;
+
+        template<typename t> t* enqueue_struct (u32 count = 1);
+        template<typename t> t* dequeue_struct (u32 count = 1);
     };
-
-
 
     //--------------------------------------------------------------------
     // ARRAY LIST
@@ -126,17 +125,17 @@ namespace sld {
     public:
 
         void init      (t* elmnts, const u32 capacity);
+        void reset     (void);
+        bool add       (const t&  elmnt);
+        void remove    (const t&  elmnt);
+        void remove_at (const u32 index);
         void validate  (void)                        const;
         u32  capacity  (void)                        const;
         u32  count     (void)                        const;
         bool is_full   (void)                        const;
         bool index_of  (const t& elmnt, u32& index)  const;
         bool contains  (const t& elmnt)              const;
-        void reset     (void);
-        t&   get       (const u32 index);
-        bool add       (const t&  elmnt);
-        void remove    (const t&  elmnt);
-        void remove_at (const u32 index);
+        t&   get       (const u32 index)             const;
 
         inline t& operator[] (const u32 index) {
             assert(index < _count);
