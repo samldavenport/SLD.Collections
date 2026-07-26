@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "C:\\Users\\sldav\\source\\repos\\SLD.Collections",
+    "command": "cl.exe C:\\Users\\sldav\\source\\repos\\SLD.Collections\\src\\sld-collections.cpp /Fo:C:\\Users\\sldav\\source\\repos\\SLD.Collections\\build\\debug\\obj\\SLD.Collections.obj /IC:\\Users\\sldav\\source\\repos\\SLD.Collections\\src /IC:\\Users\\sldav\\source\\repos\\SLD.Collections\\include /IC:\\Users\\sldav\\source\\repos\\SLD.Collections\\SLD.Core\\include /nologo /c /MD /Z7 /EHs- /std:c++17 /Od /D_HAS_EXCEPTIONS=0 /DSLD_DLL_EXPORT",
+    "file": "C:\\Users\\sldav\\source\\repos\\SLD.Collections\\src\\sld-collections.cpp"
+  }
+]

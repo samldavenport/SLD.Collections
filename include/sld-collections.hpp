@@ -53,8 +53,8 @@ namespace sld {
     SLD_COLLECTIONS_API u32             buffer_size_remaining       (const buffer* db);
     SLD_COLLECTIONS_API u32             buffer_length               (const buffer* db);
     SLD_COLLECTIONS_API u32             buffer_copy_to_mem          (const buffer* db,     const u32 db_offset,  const u32 db_size,  byte*        mem_ptr, const u32 mem_size);
-    SLD_COLLECTIONS_API u32             buffer_append_src_to_dst    (const buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db);
-    SLD_COLLECTIONS_API u32             buffer_copy_src_to_dst      (const buffer* src_db, const u32 src_offset, const u32 src_size, data_buffer* dst_db, const u32 dst_offset, const u32 dst_size);
+    SLD_COLLECTIONS_API u32             buffer_append_src_to_dst    (const buffer* src_db, const u32 src_offset, const u32 src_size, buffer* dst_db);
+    SLD_COLLECTIONS_API u32             buffer_copy_src_to_dst      (const buffer* src_db, const u32 src_offset, const u32 src_size, buffer* dst_db, const u32 dst_offset, const u32 dst_size);
     SLD_COLLECTIONS_API void            buffer_reset                (buffer* db);
     SLD_COLLECTIONS_API void            buffer_update               (buffer* db, const u32   db_offset, const byte* src_mem, const u32 src_size);
     SLD_COLLECTIONS_API u32             buffer_append_from_mem      (buffer* db, const byte* src_mem,   const u32   src_size);
@@ -94,9 +94,9 @@ namespace sld {
     SLD_COLLECTIONS_API u32             queue_buffer_size_total          (const queue_buffer* qb);
     SLD_COLLECTIONS_API u32             queue_buffer_size_free           (const queue_buffer* qb);
     SLD_COLLECTIONS_API u32             queue_buffer_size_used           (const queue_buffer* qb);
-    SLD_COLLECTIONS_API const byte*     queue_buffer_head                (const queue_buffer* qb, const stack_buffer* sb);
-    SLD_COLLECTIONS_API const byte*     queue_buffer_tail                (const queue_buffer* qb, const stack_buffer* sb);
-    SLD_COLLECTIONS_API const byte*     queue_buffer_peek                (const queue_buffer* qb, const stack_buffer* sb, const u32 size);
+    SLD_COLLECTIONS_API const byte*     queue_buffer_head                (const queue_buffer* qb);
+    SLD_COLLECTIONS_API const byte*     queue_buffer_tail                (const queue_buffer* qb);
+    SLD_COLLECTIONS_API const byte*     queue_buffer_peek                (const queue_buffer* qb);
     SLD_COLLECTIONS_API void            queue_buffer_reset               (queue_buffer* qb);
     SLD_COLLECTIONS_API const byte*     queue_buffer_peek                (queue_buffer* qb);
     SLD_COLLECTIONS_API u32             queue_buffer_push_data           (queue_buffer* qb, const u32 size, const byte* data);
@@ -204,7 +204,7 @@ namespace sld {
     SLD_COLLECTIONS_API bool            map_lookup                    (const map* m, const key*   k, value* v);
     SLD_COLLECTIONS_API void            map_reset                     (map* m);
     SLD_COLLECTIONS_API u32             map_remove                    (map* m, const key* k, const value* v, const u32 count = 1);
-    SLD_COLLECTIONS_API u32             map_insert                    (map* m, const key* k, const value* v, const u32 count = 1, h32* h = NULL); 
+    SLD_COLLECTIONS_API u32             map_insert                    (map* m, const key* k, const value* v, const u32 count = 1); 
     SLD_COLLECTIONS_API u32             map_update                    (map* m, const key* k, const value* v, const u32 count = 1); 
 
     //--------------------------------------------------------------------
